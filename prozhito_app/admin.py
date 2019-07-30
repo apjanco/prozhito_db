@@ -6,7 +6,8 @@ from mapwidgets.widgets import GooglePointFieldWidget
 
 
 class PersonAdmin(admin.ModelAdmin):
-    search_fields = ['firstname', 'patronymic', 'lastname',]
+    search_fields = ['first_name', 'patronymic', 'family_name',]
+    list_filter = ['from_tags']
 
 admin.site.register(Person, PersonAdmin)
 
