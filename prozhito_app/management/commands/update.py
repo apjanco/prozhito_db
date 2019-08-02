@@ -18,6 +18,10 @@ from dostoevsky.tokenization import UDBaselineTokenizer, RegexTokenizer
 from dostoevsky.embeddings import SocialNetworkEmbeddings
 from dostoevsky.models import SocialNetworkModel
 
+
+#wikipedia2vec for automatic entity extraction
+from wikipedia2vec import Wikipedia2Vec
+
 def get_count(cursor, table):
     query = ("SELECT count(*) FROM {}".format(table))
     cursor.execute(query)
@@ -227,13 +231,31 @@ def detect_sentiment():
         embeddings_container=embeddings_container,
         lemmatize=False,
     )
-    entries = Entry.objects.all()
+    entries = Entry.objects.filter(sentiment=None)
     for entry in tqdm.tqdm(entries):
-        results = model.predict([entry.text])
-        entry.sentiment = results[0]
-        entry.save()
+        try:
+            results = model.predict([entry.text])
+            entry.sentiment = results[0]
+            entry.save()
+        except Exception as e:
+            print(e)
 
+def nearest_entities(text):
+    #tokenize the text
+    #iterate over each token add extracted entities to doc-level list
+    if isinstance(token, wikipedia2vec.dictionary.Word):
+        pass
+    if isinstance(token, wikipedia2vec.dictionary.Entity):
+        entity_name = token.title
 
+def wikipedia2vec_entities():
+    wiki2vec = Wikipedia2Vec.load(MODEL_FILE)
+    entries = Entry.objects.all()
+    for entry in entries:
+        entities = nearest_entities((entry.text))
+        for entity in entities:
+            entry.keywords.add(Keyword.objects.get_or_create(name=entity.title))
+            entry.save()
 
 class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
