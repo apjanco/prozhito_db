@@ -3,6 +3,20 @@ from prozhito_app.models import *
 import mysql.connector
 import tqdm
 
+#for NLP
+import stanfordnlp
+from spacy_stanfordnlp import StanfordNLPLanguage
+from natasha import NamesExtractor
+from pymystem3 import Mystem
+
+#for geocoding
+from geopy.geocoders import Nominatim
+from django.contrib.gis.geos import Point
+
+#for sentiment
+from dostoevsky.tokenization import UDBaselineTokenizer, RegexTokenizer
+from dostoevsky.embeddings import SocialNetworkEmbeddings
+from dostoevsky.models import SocialNetworkModel
 
 def get_count(cursor, table):
     query = ("SELECT count(*) FROM {}".format(table))
@@ -155,6 +169,72 @@ def update_entries_with_tags(cursor):
             print(e, note_id)
         #For each person, place, keyword update existing entry relationships
 
+
+def lemmatize_texts(lemmatizer):
+    entries = Entry.objects.filter(lemmatized='')
+
+    if lemmatizer == 'stanford':
+        texts = [(entry.text, entry.id) for entry in entries]
+        snlp = stanfordnlp.Pipeline(lang='ru')
+        nlp = StanfordNLPLanguage(snlp)
+        for doc in tqdm.tqdm(nlp.pipe(texts, batch_size=100, as_tuples=True, disable=["tagger", "parser", "pos", "depparse"])):
+            id = doc[1]
+            lemmatized = ' '.join([token.lemma_ for token in doc[0]])
+            entry = Entry.objects.get(id=id)
+            entry.lemmatized = lemmatized
+            entry.save()
+    if lemmatizer == 'mystem':
+        m = Mystem()
+        for entry in tqdm.tqdm(entries):
+            lemmas = m.lemmatize(entry.text)
+            lemmatized = ''.join(lemmas)
+            entry = Entry.objects.get(id=entry.id)
+            entry.lemmatized = lemmatized
+            entry.save()
+
+
+def geocode_places():
+    places = Place.objects.all()
+    for place in tqdm.tqdm(places):
+        geolocator = Nominatim(user_agent="prozhito_db")
+        location = geolocator.geocode(place.name)
+        if location:
+            pnt = Point(location.longitude, location.latitude)
+            # add gis
+            place.gis = pnt
+            place.save()
+
+
+def names_extractor():
+    entries = Entry.objects.all()
+    for entry in tqdm.tqdm(entries):
+        text = entry.text
+        extractor = NamesExtractor()
+        matches = extractor(text)
+        if not len(matches) == 0:
+            for match in matches:
+                if match.fact.first and match.fact.middle and match.fact.last:
+                    person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, family_name=match.fact.last, from_natasha=True)
+                    entry.people.add(person[0])
+                    entry.save()
+                    print(f'[*] added person {match.fact.first} {match.fact.middle} {match.fact.last} ')
+
+def detect_sentiment():
+    tokenizer = UDBaselineTokenizer() or RegexTokenizer()
+    embeddings_container = SocialNetworkEmbeddings()
+    model = SocialNetworkModel(
+        tokenizer=tokenizer,
+        embeddings_container=embeddings_container,
+        lemmatize=False,
+    )
+    entries = Entry.objects.all()
+    for entry in tqdm.tqdm(entries):
+        results = model.predict([entry.text])
+        entry.sentiment = results[0]
+        entry.save()
+
+
+
 class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
 
@@ -189,19 +269,24 @@ class Command(BaseCommand):
         #load_notes(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
-        update_entries_with_tags(cursor)
+        #update_entries_with_tags(cursor)
 
+        self.stdout.write(self.style.SUCCESS('[*] lemmatizing text of {} diary entries'.format(str(Entry.objects.filter(lemmatized='').count()))))
+        #lemmatize_texts('mystem')
 
-        self.stdout.write(self.style.SUCCESS('[*] lemmatizing text of {} diary entries'.format(str(Entry.objects.all().count()))))
+        self.stdout.write(self.style.SUCCESS('[*] geocoding {} places'.format(Place.objects.all().count())))
+        #geocode_places()
 
-        #lemmatize_entry_text()
-        #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
+        self.stdout.write(self.style.SUCCESS('[*] extracting names with Natasha'))
+        #names_extractor()
+        #TODO cluster and remove redundant Natasha persons
 
+        #self.stdout.write(self.style.SUCCESS('[*] detecting sentiment with Dostoevsky'))
+        #detect_sentiment()
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
 
-        #geocode_places():
-        #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
+
 
         #update_wikilinks()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))

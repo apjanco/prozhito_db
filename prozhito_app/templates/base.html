@@ -1,0 +1,56 @@
+{% load static %}
+<!DOCTYPE html>
+<html style="height: 695px;">
+
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+    <title>prozhito</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/Bold-BS4-Footer-Simple.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Bold-BS4-Jumbotron-with-Particles-js-1.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Bold-BS4-Jumbotron-with-Particles-js.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Data-Table-1.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Data-Table.css' %}">
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/Navigation-with-Button.css' %}">
+    <link rel="stylesheet" href="{% static 'css/Navigation-with-Search.css' %}">
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+</head>
+
+<body>
+
+<div>
+        <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
+            <div class="container"><a class="navbar-brand" href="{% url 'HomePageView' %}" style="margin-right: 96px;color: rgba(101,82,81,0.9);"><img src="{% static 'img/logo_ru.svg' %}">-данные</a><button data-toggle="collapse" class="navbar-toggler" data-target="#navcol-1"><span class="sr-only">Toggle navigation</span><span class="navbar-toggler-icon"></span></button>
+                <div
+                    class="collapse navbar-collapse" id="navcol-1">
+                    <ul class="nav navbar-nav mr-auto">
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i class="fa fa-home"></i>&nbsp; Home</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'BrowsePageView' %}"><i class="fa fa-book"></i>&nbsp; Browse</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'SearchPageView' %}"><i class="fa fa-search"></i>&nbsp; Search</a></li>
+                    </ul><span class="navbar-text actions"> <a class="btn btn-light action-button" role="button" href="{% url 'ExportPageView' %}">Export</a></span></div>
+    </div>
+    </nav>
+    </div>
+
+{% block content %}{% endblock %}
+
+
+  <footer id="myFooter" style="padding:0px;">
+        <div class="container-fluid">
+            <div class="row text-center">
+                <div class="col footer-social" style="background-color: rgb(255,255,255);"><a class="social-icons" href="#"><i class="fa fa-facebook"></i></a><a class="social-icons" href="#"><i class="fa fa-google-plus"></i></a><a class="social-icons" href="#"><i class="fa fa-twitter"></i></a><a class="social-icons" href="#"><i class="fa fa-linkedin"></i></a></div>
+            </div>
+        </div>
+    </footer>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/jquery.dataTables.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.15/js/dataTables.bootstrap.min.js"></script>
+    <script src="{% static 'js/Bold-BS4-Jumbotron-with-Particles-js.js' %}"></script>
+</body>
+
+</html>

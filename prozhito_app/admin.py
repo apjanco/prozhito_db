@@ -7,7 +7,7 @@ from mapwidgets.widgets import GooglePointFieldWidget
 
 class PersonAdmin(admin.ModelAdmin):
     search_fields = ['first_name', 'patronymic', 'family_name',]
-    list_filter = ['from_tags']
+    list_filter = ['from_tags', 'from_natasha']
 
 admin.site.register(Person, PersonAdmin)
 
@@ -22,7 +22,9 @@ admin.site.register(Place, PlaceAdmin)
 
 
 class EntryAdmin(admin.ModelAdmin):
-    pass
+    list_filter = ['sentiment']
+    autocomplete_fields = ['people',]
+
 
 admin.site.register(Entry, EntryAdmin)
 

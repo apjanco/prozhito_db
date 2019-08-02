@@ -48,6 +48,7 @@ class Entry(models.Model):
     keywords = models.ManyToManyField(Keyword, blank=True, verbose_name="Keyword(s)")
     places = models.ManyToManyField(Place, blank=True, verbose_name="Place(s)")
     diary = models.IntegerField(default=None)
+    sentiment = models.CharField(max_length=220, blank=True, null=True)
 
     def __str__(self):
         return self.text[:100]

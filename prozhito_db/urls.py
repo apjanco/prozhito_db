@@ -15,7 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
+from prozhito_app import views
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', views.HomePageView.as_view(), name='HomePageView'),
+    path('search/', views.SearchPageView.as_view(), name='SearchPageView'),
+    path('browse/', views.BrowsePageView.as_view(), name='BrowsePageView'),
+    path('export/', views.ExportPageView.as_view(), name='ExportPageView'),
+
 ]
