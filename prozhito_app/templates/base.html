@@ -18,6 +18,7 @@
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Button.css' %}">
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Search.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
+    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
 </head>
 
 <body>
@@ -25,7 +26,7 @@
         <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
                 <div class="collapse navbar-collapse" id="navcol-1">
                     <ul class="nav navbar-nav mr-auto">
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i class="fa fa-home"></i>&nbsp;</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'BrowsePageView' %}"><i class="fa fa-book"></i>&nbsp; Найти</a></li>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'SearchPageView' %}"><i class="fa fa-search"></i>&nbsp; Поиск</a></li>
                     </ul><span class="navbar-text actions"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>

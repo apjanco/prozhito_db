@@ -23,6 +23,7 @@ urlpatterns = [
     path('', views.HomePageView.as_view(), name='HomePageView'),
     path('search/', views.SearchPageView.as_view(), name='SearchPageView'),
     path('browse/', views.BrowsePageView.as_view(), name='BrowsePageView'),
+    path('browse/<entity>/<type>/', views.browse, name='search'),
     path('export/', views.ExportPageView.as_view(), name='ExportPageView'),
     path('datatable/', views.DiariesJson.as_view(), name='diaries_json'),
 

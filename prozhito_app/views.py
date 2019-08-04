@@ -46,6 +46,10 @@ class BrowsePageView(TemplateView):
         context['entries'] = Entry.objects.all()[:5]
         return context
 
+
+def browse(request, entity, type):
+    pass
+
 class ExportPageView(TemplateView):
 
     template_name = "export.html"

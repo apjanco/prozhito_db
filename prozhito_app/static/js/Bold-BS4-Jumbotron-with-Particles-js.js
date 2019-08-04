@@ -1,7 +1,7 @@
 particlesJS("particles-js", {
  "particles": {
     "number": {
-      "value": 80,
+      "value": 160,
       "density": {
         "enable": true,
         "value_area": 800
@@ -20,33 +20,33 @@ particlesJS("particles-js", {
         "nb_sides": 5
       },
       "image": {
-        "src": "https://upload.wikimedia.org/wikipedia/commons/5/57/Russian_officer%27s_diary_Lieutenant-Colonel_A._V._Pekarev._WW_II.jpg",
+        "src": "img/github.svg",
         "width": 100,
         "height": 100
       }
     },
     "opacity": {
       "value": 1,
-      "random": false,
+      "random": true,
       "anim": {
-        "enable": false,
+        "enable": true,
         "speed": 1,
-        "opacity_min": 0.1,
+        "opacity_min": 0,
         "sync": false
       }
     },
     "size": {
-      "value": 8.017060304327615,
+      "value": 4.008530152163807,
       "random": true,
       "anim": {
         "enable": false,
-        "speed": 40,
-        "size_min": 0.1,
+        "speed": 4,
+        "size_min": 0.3,
         "sync": false
       }
     },
     "line_linked": {
-      "enable": true,
+      "enable": false,
       "distance": 150,
       "color": "#ffffff",
       "opacity": 0.4,
@@ -54,16 +54,16 @@ particlesJS("particles-js", {
     },
     "move": {
       "enable": true,
-      "speed": 6,
+      "speed": 1,
       "direction": "none",
-      "random": false,
+      "random": true,
       "straight": false,
       "out_mode": "out",
       "bounce": false,
       "attract": {
         "enable": false,
         "rotateX": 600,
-        "rotateY": 1200
+        "rotateY": 600
       }
     }
   },
@@ -76,7 +76,7 @@ particlesJS("particles-js", {
       },
       "onclick": {
         "enable": true,
-        "mode": "push"
+        "mode": "repulse"
       },
       "resize": true
     },
@@ -88,14 +88,14 @@ particlesJS("particles-js", {
         }
       },
       "bubble": {
-        "distance": 85.26810729164123,
-        "size": 24.362316369040354,
+        "distance": 250,
+        "size": 12,
         "duration": 2,
-        "opacity": 8,
+        "opacity": 0,
         "speed": 3
       },
       "repulse": {
-        "distance": 200,
+        "distance": 400,
         "duration": 0.4
       },
       "push": {
