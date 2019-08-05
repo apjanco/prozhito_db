@@ -22,6 +22,7 @@ admin.site.register(Place, PlaceAdmin)
 
 
 class EntryAdmin(admin.ModelAdmin):
+    search_fields = ['id', ]
     list_filter = ['sentiment']
     autocomplete_fields = ['people',]
 

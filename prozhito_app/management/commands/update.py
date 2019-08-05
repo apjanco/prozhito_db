@@ -14,9 +14,9 @@ from geopy.geocoders import Nominatim
 from django.contrib.gis.geos import Point
 
 #for sentiment
-from dostoevsky.tokenization import UDBaselineTokenizer, RegexTokenizer
-from dostoevsky.embeddings import SocialNetworkEmbeddings
-from dostoevsky.models import SocialNetworkModel
+#from dostoevsky.tokenization import UDBaselineTokenizer, RegexTokenizer
+#from dostoevsky.embeddings import SocialNetworkEmbeddings
+#from dostoevsky.models import SocialNetworkModel
 
 
 #wikipedia2vec for automatic entity extraction
@@ -209,6 +209,25 @@ def geocode_places():
             place.save()
 
 
+def geocode_entries():
+    snlp = stanfordnlp.Pipeline(lang='ru')
+    nlp = StanfordNLPLanguage(snlp)
+    entries = Entry.objects.all()
+    for entry in tqdm.tqdm(entries):
+        doc = nlp(entry.text)
+        words = [token.text for token in doc if token.is_punct is False and token.is_stop is False]
+        for word in words:
+            geolocator = Nominatim(user_agent="prozhito_db")
+            location = geolocator.geocode(word)
+            if location:
+                print(location)
+                """
+                place = Place.objects.get_or_create(name=word, gis=Point(location.longitude, location.latitude))
+                entry.places.add(place[0])
+                entry.save()
+                print("added ", place[0].name, 'to', entry.id)
+                """
+
 def names_extractor():
     entries = Entry.objects.all()
     for entry in tqdm.tqdm(entries):
@@ -241,18 +260,14 @@ def detect_sentiment():
             print(e)
 
 def nearest_entities(text):
-    #tokenize the text
-    #iterate over each token add extracted entities to doc-level list
-    if isinstance(token, wikipedia2vec.dictionary.Word):
-        pass
-    if isinstance(token, wikipedia2vec.dictionary.Entity):
-        entity_name = token.title
+
+    ents = [i for i in text]
 
 def wikipedia2vec_entities():
     wiki2vec = Wikipedia2Vec.load(MODEL_FILE)
     entries = Entry.objects.all()
     for entry in entries:
-        entities = nearest_entities((entry.text))
+        entities = "" #TODO find entities on tokens or full text?
         for entity in entities:
             entry.keywords.add(Keyword.objects.get_or_create(name=entity.title))
             entry.save()
@@ -303,8 +318,11 @@ class Command(BaseCommand):
         #names_extractor()
         #TODO cluster and remove redundant Natasha persons
 
-        #self.stdout.write(self.style.SUCCESS('[*] detecting sentiment with Dostoevsky'))
+        self.stdout.write(self.style.SUCCESS('[*] detecting sentiment with Dostoevsky'))
         #detect_sentiment()
+
+        self.stdout.write(self.style.SUCCESS('[*] geocoding text of all diary entries'))
+        geocode_entries()
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
 
