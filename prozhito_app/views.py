@@ -47,8 +47,9 @@ class BrowsePageView(TemplateView):
         return context
 
 
-def browse(request, entity, type):
-    pass
+def browse(request, type):
+    
+    return render(request, 'browse.html',)
 
 class ExportPageView(TemplateView):
 
@@ -98,7 +99,7 @@ class DiariesJson(BaseDatatableView):
         # but here we only want to check the status of translating process.
         # so, if 'translation' is empty, i.e. no one enters any information in 'translation', we display 'waiting';
         # otherwise, we display 'processing'.
-        if column == 'text':
+        if column == 'текст':
             return format_html("<p>{}</p>".format(formatter(row.text, filter_name='markdown')))
         if column == 'date_start':
             return format_html("<p>{}</p>".format(row.date_start,))
