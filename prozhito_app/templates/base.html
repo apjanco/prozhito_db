@@ -47,7 +47,7 @@
                 <div class="collapse navbar-collapse" id="navcol-1"">
                     <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'people' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'SearchPageView' %}"><i class="fa fa-search"></i>&nbsp; Искать</a></li>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>
     </div>
@@ -65,28 +65,31 @@
             <div class="row">
                 <div class="col-md-6">
 
-  {% if request.get_full_path == '/browse/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+  {% if request.get_full_path == '/browse/diaries/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
   {% endif %}
 
-{% if request.get_full_path == '/browse/people/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+{% if request.get_full_path == '/browse/people/' or request.get_full_path == '/chart/people/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
  {% endif %}
 
-{% if request.get_full_path == '/browse/places/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+{% if request.get_full_path == '/browse/places/' or request.get_full_path == '/chart/places/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
  {% endif %}
 
-{% if request.get_full_path == '/browse/entries/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+{% if request.get_full_path == '/browse/entries/' or request.get_full_path == '/chart/entries/'%}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
  {% endif %}
 <input id="range" type="text"/>
 </div>
 
                 <div class="col-md-6">
-                    <div class="btn-group" role="group"><button class="btn btn-primary active" type="button">Table</button><button class="btn btn-primary" type="button">Freq. Chart</button><button class="btn btn-primary" type="button">Date Chart</button><button class="btn btn-primary" type="button">Map</button></div>
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
                 </div>
-            </div>
         </div>
     </div>
 
