@@ -1,11 +1,19 @@
 from django.contrib.gis.db import models
+from djgeojson.fields import PointField
+
 
 
 # Create your models here.
 class Place(models.Model):
     name = models.CharField(max_length=220, blank=True, null=True)
     wiki = models.URLField(max_length=250, blank=True)
-    gis = models.PointField(null=True, blank=True)
+    geom = models.PointField(null=True, blank=True)
+
+    @property
+    def popupContent(self):
+        return '<b>{}</b>'.format(
+            self.name,
+            )
 
     def __str__(self):
         return self.name
