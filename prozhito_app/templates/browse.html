@@ -8,9 +8,69 @@
 
 
 {% block content %}
-   
+
 
         <div class="container">
+{% if request.get_full_path == '/browse/diaries/' %}
+
+            <div class="row">
+
+                <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+     <tr>
+        <th> автор дневника </th>
+        <th> количество записей </th>
+         <th> первая запись</th>
+          <th> последняя запись</th>
+     </tr>
+  </thead>
+
+    </table></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
+
+<script>
+// Range Slider
+      var slider = new Slider("#range", {
+        min: 0,
+        max: 100,
+        value: [50, 80],
+        range: true,
+        tooltip: 'always'
+      });
+
+$(document).ready(function() {
+
+
+    // DataTable
+    var table = $('.myTable').DataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'diary_json' %}",
+        "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
+        dom: 'Bfrtip',
+        buttons: [
+               'copy',
+               'excel',
+               'csv',
+               'pdf',
+               'print'
+        ]
+    } );
+
+} );
+
+</script>
+{% endif %}
 
 {% if request.get_full_path == '/browse/entries/' %}
 

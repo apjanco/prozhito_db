@@ -314,3 +314,57 @@ class PlacesJson(BaseDatatableView):
             q = Q(name__icontains=search) | Q(wiki__icontains=search)
             qs = qs.filter(q)
         return qs
+
+class DiaryJson(BaseDatatableView):
+    # the model you're going to show
+    model = Diary
+
+    """
+    id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True, null=True, related_name='diary_author')
+    no_entries = models.IntegerField(default=None)
+    first_note = models.DateField(blank=True, null=True)
+    last_note = models.DateField(blank=True, null=True)
+
+    """
+
+    # define columns that will be returned
+    # they should be the fields of your model, and you may customize their displaying contents in render_column()
+    # don't worry if your headers are not the same as your field names, you will define the headers in your template
+    columns = ['author', 'no_entries', 'first_note', 'last_note',] # 'info', 'birthday', 'deathday', 'wikilink']
+
+    # define column names that will be used in sorting
+    # order is important and should be same as order of columns displayed by datatables
+    # for non sortable columns use empty value like ''
+    order_columns = ['author', 'no_entries', 'first_note', 'last_note',] # 'info', 'birthday', 'deathday', 'wikilink']
+
+    # set max limit of records returned
+    # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
+    max_display_length = 500
+
+    def render_column(self, row, column):
+        # we want to render 'translation' as a custom column, because 'translation' is defined as a Textfield in Image model,
+        # but here we only want to check the status of translating process.
+        # so, if 'translation' is empty, i.e. no one enters any information in 'translation', we display 'waiting';
+        # otherwise, we display 'processing'.
+        if column == 'author':
+            return format_html("<p>{}</p>".format(row.author,))
+        if column == 'no_entries':
+            return format_html("<p>{}</p>".format(row.no_entries,))
+        if column == 'first_note':
+            return format_html("<p>{}</p>".format(row.first_note,))
+        if column == 'last_note':
+            return format_html("<p>{}</p>".format(row.last_note, ))
+
+        else:
+            return super(DiaryJson, self).render_column(row, column)
+
+    def filter_queryset(self, qs):
+        # use parameters passed in GET request to filter queryset
+
+        # here is a simple example
+        search = self.request.GET.get('search[value]', None)
+        if search:
+            q = Q(author__first_name__icontains=search) | Q(author__patronymic__icontains=search) | Q(author__family_name__icontains=search)
+            qs = qs.filter(q)
+        return qs

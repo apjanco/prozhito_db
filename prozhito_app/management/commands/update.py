@@ -4,10 +4,10 @@ import mysql.connector
 import tqdm
 
 #for NLP
-import stanfordnlp
-from spacy_stanfordnlp import StanfordNLPLanguage
-from natasha import NamesExtractor
-from pymystem3 import Mystem
+#import stanfordnlp
+#from spacy_stanfordnlp import StanfordNLPLanguage
+#from natasha import NamesExtractor
+#from pymystem3 import Mystem
 
 #for geocoding
 from geopy.geocoders import Nominatim
@@ -20,7 +20,7 @@ from django.contrib.gis.geos import Point
 
 
 #wikipedia2vec for automatic entity extraction
-from wikipedia2vec import Wikipedia2Vec
+#from wikipedia2vec import Wikipedia2Vec
 
 def get_count(cursor, table):
     query = ("SELECT count(*) FROM {}".format(table))
@@ -56,6 +56,22 @@ def load_persons(cursor):
             # updates
             # createdDate
         )
+
+
+def load_diaries(cursor):
+    query = ("SELECT * FROM diary")
+    cursor.execute(query)
+
+    for row in tqdm.tqdm(cursor):
+
+        Diary.objects.update_or_create(
+            id=row[0],
+            author=Person.objects.get_or_create(id=row[1])[0],
+            no_entries=row[3],
+            first_note=row[4],
+            last_note=row[5],
+            )
+
 
 def load_tags(cursor):
     query = ('SELECT * from tags')
@@ -305,6 +321,9 @@ class Command(BaseCommand):
         self.stdout.write(self.style.SUCCESS('[*] loading {} diary entries'.format(get_count(cursor, 'notes'))))
         #load_notes(cursor)
 
+        self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
+        load_diaries(cursor)
+
         self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
         #update_entries_with_tags(cursor)
 
@@ -322,7 +341,7 @@ class Command(BaseCommand):
         #detect_sentiment()
 
         self.stdout.write(self.style.SUCCESS('[*] geocoding text of all diary entries'))
-        geocode_entries()
+        #geocode_entries()
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
 

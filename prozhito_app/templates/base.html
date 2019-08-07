@@ -57,7 +57,9 @@
 
         {% if request.get_full_path == '/' %}
         {% endif %}
-        {% if not request.get_full_path == '/' %}
+         {% if request.get_full_path == '/search/' %}
+        {% endif %}
+        {% if not request.get_full_path == '/'  %}
 
     <div></div>
     <div>

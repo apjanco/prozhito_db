@@ -61,3 +61,13 @@ class Entry(models.Model):
     def __str__(self):
         return self.text[:100]
 
+
+class Diary(models.Model):
+    id = models.AutoField(primary_key=True)
+    author = models.ForeignKey(Person, on_delete=models.CASCADE, blank=True, null=True, related_name='diary_author')
+    no_entries = models.IntegerField(default=None)
+    first_note = models.DateField(blank=True, null=True)
+    last_note = models.DateField(blank=True, null=True)
+
+    def __str__(self):
+        return str(self.id)
