@@ -8,39 +8,7 @@
 
 
 {% block content %}
-    <div></div>
-    <div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-
-  {% if request.get_full_path == '/browse/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-  {% endif %}
-
-{% if request.get_full_path == '/browse/people/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/places/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/entries/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-<input id="range" type="text"/>
-</div>
-
-                <div class="col-md-6">
-                    <div class="btn-group" role="group"><button class="btn btn-primary active" type="button">Table</button><button class="btn btn-primary" type="button">Freq. Chart</button><button class="btn btn-primary" type="button">Date Chart</button><button class="btn btn-primary" type="button">Map</button></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div></div>
-    <div>
+   
 
         <div class="container">
 
