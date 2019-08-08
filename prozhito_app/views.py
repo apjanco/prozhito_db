@@ -9,6 +9,7 @@ from django.utils.html import escape, format_html, mark_safe
 from django_markup.markup import formatter
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.db.models import Q
+import pickle
 
 
 class HomePageView(TemplateView):
@@ -52,11 +53,22 @@ def browse(request, type):
     return render(request, 'browse.html',)
 
 def map(request, entity):
+
+    if entity == 'diaries':
+        context = {}
+
+    if entity == 'people':
+        context = {}
+
     if entity == 'places':
         places = Place.objects.all()
         context = {'places': places}
-    else:
+
+
+    if entity == 'entries':
+        #people = Entry.objects.filter(~Q(places=None))
         context = {}
+
 
     return render(request, 'map.html', context)
 
@@ -70,8 +82,9 @@ def chart(request, entity):
             plot_bgcolor='rgba(0,0,0,0)')
 
         figure = go.Figure(layout=layout)
-
-        qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
+        
+        qs = pickle.load(open("/srv/prozhito_db/prozhito_app/entry_date_count.pickle", "rb"))
+        #qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
         x = [q['date_start'] for q in qs]
         y = [q['date_start__count'] for q in qs]
 
