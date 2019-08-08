@@ -221,7 +221,7 @@ def geocode_places():
         if location:
             pnt = Point(location.longitude, location.latitude)
             # add gis
-            place.gis = pnt
+            place.geom = pnt
             place.save()
 
 
@@ -322,7 +322,7 @@ class Command(BaseCommand):
         #load_notes(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
-        load_diaries(cursor)
+        #load_diaries(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
         #update_entries_with_tags(cursor)
@@ -331,7 +331,7 @@ class Command(BaseCommand):
         #lemmatize_texts('mystem')
 
         self.stdout.write(self.style.SUCCESS('[*] geocoding {} places'.format(Place.objects.all().count())))
-        #geocode_places()
+        geocode_places()
 
         self.stdout.write(self.style.SUCCESS('[*] extracting names with Natasha'))
         #names_extractor()

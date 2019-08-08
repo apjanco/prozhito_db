@@ -53,52 +53,6 @@
     </div>
     </nav>
  
-{% block navbar %}
-
-        {% if request.get_full_path == '/' %}
-        {% endif %}
-         {% if request.get_full_path == '/search/' %}
-        {% endif %}
-        {% if not request.get_full_path == '/'  %}
-
-    <div></div>
-    <div>
-        <div class="container">
-            <div class="row">
-                <div class="col-md-6">
-
-  {% if request.get_full_path == '/browse/diaries/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-  {% endif %}
-
-{% if request.get_full_path == '/browse/people/' or request.get_full_path == '/chart/people/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/places/' or request.get_full_path == '/chart/places/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/entries/' or request.get_full_path == '/chart/entries/'%}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-<input id="range" type="text"/>
-</div>
-
-                <div class="col-md-6">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
-                        <button class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
-                        <button class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
-                     </div>
-                </div>
-        </div>
-    </div>
-
-    <div></div>
-    <div>
-        {% endif %}
-{% endblock %}
 
 
 

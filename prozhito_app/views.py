@@ -49,13 +49,16 @@ class BrowsePageView(TemplateView):
 
 def browse(request, type):
 
-    if type == 'places':
+    return render(request, 'browse.html',)
+
+def map(request, entity):
+    if entity == 'places':
         places = Place.objects.all()
-        context = {'places':places}
+        context = {'places': places}
     else:
         context = {}
-    
-    return render(request, 'browse.html', context)
+
+    return render(request, 'map.html', context)
 
 
 def chart(request, entity):
@@ -68,7 +71,7 @@ def chart(request, entity):
 
         figure = go.Figure(layout=layout)
 
-        qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))[:1000]
+        qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
         x = [q['date_start'] for q in qs]
         y = [q['date_start__count'] for q in qs]
 
@@ -113,6 +116,27 @@ def chart(request, entity):
         qs = Entry.objects.order_by('places__name').values('places__name').distinct().annotate(Count('places__name'))
         x = [q['places__name'] for q in qs]
         y = [q['places__name__count'] for q in qs]
+
+        figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+            color='#E4653F',
+            size=5),
+                                    ))
+
+        div = opy.plot(figure, auto_open=False, output_type='div')
+        context = {'graph':div}
+
+    if entity == 'diaries':
+        layout = go.Layout(
+            title="<b>Количество записей в дневнике по автору</b>",
+            xaxis={'title': 'автор', 'showticklabels':False,}, yaxis={'title': 'количество'},
+            paper_bgcolor='rgba(0,0,0,0)',
+            plot_bgcolor='rgba(0,0,0,0)')
+
+        figure = go.Figure(layout=layout)
+
+        qs = Diary.objects.all().order_by('no_entries')
+        x = [' '.join([str(q.author.first_name), str(q.author.patronymic), str(q.author.family_name)]) for q in qs]
+        y = [q.no_entries for q in qs]
 
         figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
             color='#E4653F',

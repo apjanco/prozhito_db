@@ -25,6 +25,7 @@ urlpatterns = [
     #path('browse/', views.BrowsePageView.as_view(), name='BrowsePageView'),
     path('browse/<type>/', views.browse, name='browse'),
     path('chart/<entity>/', views.chart, name='chart'),
+    path('map/<entity>/', views.map, name='map'),
     path('export/', views.ExportPageView.as_view(), name='ExportPageView'),
     path('datatable/', views.DiariesJson.as_view(), name='diaries_json'),
     path('diary-json/', views.DiaryJson.as_view(), name='diary_json'),

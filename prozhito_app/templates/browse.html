@@ -7,7 +7,106 @@
   {% leaflet_css %}
 
 
+
+
+
+
 {% block content %}
+
+
+
+        {% if request.get_full_path == '/' %}
+        {% endif %}
+         {% if request.get_full_path == '/search/' %}
+        {% endif %}
+        {% if not request.get_full_path == '/'  %}
+
+    <div></div>
+    <div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+
+  {% if request.get_full_path == '/browse/diaries/' or request.get_full_path == '/chart/diaries/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-pencil-square-o"></i>&nbsp;дневниковые записи</button></div>
+<input id="range" type="text"/>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+  {% endif %}
+
+{% if request.get_full_path == '/browse/people/' or request.get_full_path == '/chart/people/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+<input id="range" type="text"/>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'people' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/browse/places/' or request.get_full_path == '/chart/places/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+<input id="range" type="text"/>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'places' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/browse/entries/' or request.get_full_path == '/chart/entries/'%}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+<input id="range" type="text"/>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+        {% endif %}
 
 
         <div class="container">
@@ -199,7 +298,6 @@ $(document).ready(function() {
 
 {% if request.get_full_path == '/browse/places/' %}
 
-{% leaflet_map "spots" callback="window.map_init" %}
             <div class="row">
 
                 <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
@@ -257,71 +355,6 @@ $(document).ready(function() {
 
 </script>
 
-<script>
-
-    // ============
-    // Esri-Leaflet
-    // ============
-    var map = L.map('map', {zoomControl: false}).setView([39.568767, -15.223166], 2),
-      layer = L.esri.basemapLayer('NationalGeographic').addTo(map),
-      // layerLabels = L.esri.basemapLayer('xxxLabels').addTo(map);
-      layerLabels = null,
-      worldTransportation = L.esri.basemapLayer('ImageryTransportation');
-      //==========================
-     //Things that Andy has added
-     //==========================
-     var data = {{ places|geojsonfeature:"popupContent"|safe }};
-      L.geoJson(data, {
-              onEachFeature: function onEachFeature(feature, layer) {
-                var props = feature.properties.popupContent;
-                var content = `<p>${props}</p>`;
-                layer.bindPopup(content);
-            }}).addTo(map);
-    //Not Stuff Andy has added
-    function setBasemap(basemap) {
-      if (layer) {
-        map.removeLayer(layer);
-      }
-      if (basemap === 'OpenStreetMap') {
-        layer = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png");
-      }
-      else {
-        layer = L.esri.basemapLayer(basemap);
-      }
-      map.addLayer(layer);
-      if (layerLabels) {
-        map.removeLayer(layerLabels);
-      }
-      if (basemap === 'ShadedRelief' || basemap === 'Oceans' || basemap === 'Gray' || basemap === 'DarkGray' || basemap === 'Imagery' || basemap === 'Terrain') {
-        layerLabels = L.esri.basemapLayer(basemap + 'Labels');
-        map.addLayer(layerLabels);
-      }
-
-      // add world transportation service to Imagery basemap
-      if (basemap === 'Imagery') {
-        worldTransportation.addTo(map);
-      } else if (map.hasLayer(worldTransportation)) {
-        // remove world transportation if Imagery basemap is not selected
-        map.removeLayer(worldTransportation);
-      }
-    }
-    L.control.zoom({
-      position:'topright'
-    }).addTo(map);
-    //var searchControl = L.esri.Geocoding.Controls.geosearch({expanded: true, collapseAfterResult: false, zoomToResult: false}).addTo(map);
-    var searchControl = L.esri.Geocoding.geosearch({expanded: true, collapseAfterResult: false, zoomToResult: false}).addTo(map);
-
-    searchControl.on('results', function(data){
-      if (data.results.length > 0) {
-        var popup = L.popup()
-          .setLatLng(data.results[0].latlng)
-          .setContent(data.results[0].text)
-          .openOn(map);
-        map.setView(data.results[0].latlng)
-      }
-    })
-
-  </script>
 {% endif %}
 
 {% endblock %}
