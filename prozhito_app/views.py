@@ -66,8 +66,15 @@ def map(request, entity):
 
 
     if entity == 'entries':
-        #people = Entry.objects.filter(~Q(places=None))
-        context = {}
+        entries = Entry.objects.filter(~Q(places=None))
+        # TODO Good place for a pickle
+        places = [entry.places.all() for entry in entries]
+        all_places = set({})
+        for place in places:
+            for i in place:
+                all_places.add(i)
+        #For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
+        context = {'places':places}
 
 
     return render(request, 'map.html', context)

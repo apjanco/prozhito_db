@@ -56,12 +56,12 @@
   color: #2b55ff;
 }
 
-#myFooter .fa-google-plus:hover {
-  color: red;
+#myFooter .fa-vk:hover {
+  color: #4c75a3;
 }
 
-#myFooter .fa-google-plus:focus {
-  color: red;
+#myFooter .fa-vk:focus {
+  color: #4c75a3;
 }
 
 #myFooter .fa-twitter:hover {

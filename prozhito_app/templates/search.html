@@ -4,22 +4,30 @@
 
 {% block content %}
 <div class="container">
-<script
+
+    <!--
+    <script
   src="https://code.jquery.com/jquery-3.4.1.min.js"
   integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
   crossorigin="anonymous"></script>
+-->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
 
  <!--  url 'GAM:search' %} -->
     <form id="searchers_form"  action="advanced_search_submit" method="GET" style="padding-top: 10px;">
        <div class="form-group" id="searchers">
+           <p><label for="amount">диапазон дат:  </label><input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;"></p>
+          <div id="slider-range"></div>
+           <br><br>
           <div id="searcher1"></div>
        </div>
 	<input id="full_info" type="hidden" value='' name="full_info">
     </form>
 
     
-    <span>{% trans "добавить поле в форму" %}</span>
+
     <input type="hidden" id="searcher_counter" name="seacher_count" value="1">
     <button type="button" style="border-color: #000000;" id="OR_search" class="btn">{% trans "или" %}</button>
     <button type="button" style="border-color: #000000;" id="AND_search" class="btn">{% trans "и" %}</button>
@@ -32,22 +40,22 @@
 	$("#searcher_counter").val("1");
 	});
       // These long lines are just html we will be using and reusing
-      var select_fields = "<select class='form-control field_option'> <option>{% trans "любом поле" %}</option> <option>{% trans "люди" %}</option> <option>{% trans "мест" %}</option> <option>{% trans "ключевое слово" %}</option> <option>{% trans "что-то другое" %}</option></select>";
+      var select_fields = "<select class='form-control field_option'> <option>{% trans "любой области" %}</option> <option>{% trans "людях" %}</option> <option>{% trans "местах" %}</option> <option>{% trans "записях" %}</option></select>";
        var delete_button = "<button class='delete_searcher' type='button'><i class='fa fa-times delete_searcher'></i></button>"; 
       
       function createLogicDropdown(operator) {
         if(operator=="AND") {
-            return  "<select class='form-control logic_option'> <option value='OR'>O</option> <option value='AND' selected='selected'>{% trans "Y" %}</option> <option value='NOT'>{% trans "NO" %}</option></select>";
+            return  "<select class='form-control logic_option'> <option value='OR'>или</option> <option value='AND' selected='selected'>и</option> <option value='NOT'>не</option></select>";
         }
 	else if (operator=="OR") {
-            return  "<select class='form-control logic_option'> <option selected='selected' value='OR'>O</option> <option value='AND'>{% trans "Y" %}</option> <option value='NOT'>{% trans "NO" %}</option></select>";
+            return  "<select class='form-control logic_option'> <option selected='selected' value='OR'>или</option> <option value='AND'>и</option> <option value='NOT'>не</option></select>";
         }
 	else {
-            return  "<select class='form-control logic_option'> <option value='OR'>{% trans "O" %}</option> <option value='AND'>Y</option> <option selected='selected' value='NOT'>{% trans "NO" %}</option></select>";
+            return  "<select class='form-control logic_option'> <option value='OR'>или</option> <option value='AND'>и</option> <option selected='selected' value='NOT'>не</option></select>";
         }
       }
       // make first search bar. This one can't be deleted
-      $("#searcher1").append("<span><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='search' placeholder='{% trans "" %}'><span class='input-group-addon'><button type='submit'><i class='fa fa-search'></i></button></span></div> в " + select_fields + "</span>");
+      $("#searcher1").append("<span><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='search' placeholder='{% trans "найти..." %}'><span class='input-group-addon'><button type='submit'><i class='fa fa-search'></i></button></span></div> в " + select_fields + "</span>");
       // what happens when you click AND
       $("#AND_search").click(function(event) {
 	if($("#searcher_counter").val() < 11) {
@@ -55,7 +63,7 @@
 	  $("#searcher_counter").val(+$("#searcher_counter").val() + 1);
 	  var id_num = $("#searcher_counter").val();
           $("#searchers").append("<div id='searcher"+ id_num +"' class='form-group'></div>");
-	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("AND") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='AND_search' placeholder='Buscar...'><span class='input-group-addon'>" + delete_button + "</span></div> en " + select_fields + "</span>");
+	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("AND") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='AND_search' placeholder='...'><span class='input-group-addon'>" + delete_button + "</span></div>в " + select_fields + "</span>");
 	}
       });
       // what happens when you click OR
@@ -65,7 +73,7 @@
 	  $("#searcher_counter").val(+$("#searcher_counter").val() + 1);
 	  var id_num = $("#searcher_counter").val();
           $("#searchers").append("<div id='searcher"+ id_num +"'></div>");
-	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("OR") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='OR_search' placeholder='Buscar...'><span class='input-group-addon'>" + delete_button + "</span></div> en " + select_fields + "</span>");
+	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("OR") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='OR_search' placeholder='...'><span class='input-group-addon'>" + delete_button + "</span></div> в " + select_fields + "</span>");
 	}
       });
       // what happens when you click NOT
@@ -75,7 +83,7 @@
 	  $("#searcher_counter").val(+$("#searcher_counter").val() + 1);
 	  var id_num = $("#searcher_counter").val();
           $("#searchers").append("<div id='searcher"+ id_num +"'></div>");
-	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("NOT") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='NOT_search' placeholder='Buscar...'><span class='input-group-addon'>" + delete_button + "</span></div> en " + select_fields + "</div>");
+	  $("#searcher" + id_num).append("<span>" + createLogicDropdown("NOT") + "<br/><div class='input-group stylish-input-group'><input type='text' class='form-control search_text' name='NOT_search' placeholder='...'><span class='input-group-addon'>" + delete_button + "</span></div> в " + select_fields + "</div>");
 	}
       });
       // what happens when you click Delete
@@ -87,6 +95,24 @@
           $(event.target).parent().parent().parent().parent().remove();
 	  $("#searcher_counter").val(+$("#searcher_counter").val() - 1);
        });
+
+     // add date pickers
+
+$( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 1581,
+      max: 2018,
+      values: [ 1581, 2018 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val( "" + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+      }
+    });
+    $( "#amount" ).val( "" + $( "#slider-range" ).slider( "values", 0 ) +
+      " - " + $( "#slider-range" ).slider( "values", 1 ) );
+  } );
+
+
       // on submit we generate full_info
       $("#searchers_form").submit(function(event) {
 	// uncomment to prevent page submit
