@@ -18,7 +18,7 @@
  <!--  url 'GAM:search' %} -->
     <form id="searchers_form"  action="advanced_search_submit" method="GET" style="padding-top: 10px;">
        <div class="form-group" id="searchers">
-           <p><label for="amount">диапазон дат:  </label><input type="text" id="amount" readonly style="border:0; color:#f6931f; font-weight:bold;"></p>
+           <p><label for="amount"></label><input type="text" id="amount" readonly style="border:0;"></p>
           <div id="slider-range"></div>
            <br><br>
           <div id="searcher1"></div>
@@ -40,7 +40,7 @@
 	$("#searcher_counter").val("1");
 	});
       // These long lines are just html we will be using and reusing
-      var select_fields = "<select class='form-control field_option'> <option>{% trans "любой области" %}</option> <option>{% trans "людях" %}</option> <option>{% trans "местах" %}</option> <option>{% trans "записях" %}</option></select>";
+      var select_fields = "<select class='form-control field_option'> <option>{% trans "любом поле" %}</option> <option>{% trans "людях" %}</option> <option>{% trans "местах" %}</option> <option>{% trans "записях" %}</option></select>";
        var delete_button = "<button class='delete_searcher' type='button'><i class='fa fa-times delete_searcher'></i></button>"; 
       
       function createLogicDropdown(operator) {
@@ -105,11 +105,11 @@ $( function() {
       max: 2018,
       values: [ 1581, 2018 ],
       slide: function( event, ui ) {
-        $( "#amount" ).val( "" + ui.values[ 0 ] + " - " + ui.values[ 1 ] );
+        $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] );
       }
     });
-    $( "#amount" ).val( "" + $( "#slider-range" ).slider( "values", 0 ) +
-      " - " + $( "#slider-range" ).slider( "values", 1 ) );
+    $( "#amount" ).val( " от " + $( "#slider-range" ).slider( "values", 0 ) +
+      " до " + $( "#slider-range" ).slider( "values", 1 ) );
   } );
 
 
