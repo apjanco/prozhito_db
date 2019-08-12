@@ -43,6 +43,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
       <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/i18n/ru.js"></script>
 
     
 </head>
@@ -176,27 +177,77 @@ $('.dropdown').on('hide.bs.dropdown', function () {
 
 
 $('.people-class').select2({
+  language: "ru",
   ajax: {
     url: '{% url 'person-autocomplete' %}',
-    dataType: 'json'
+    dataType: 'json',
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
   }
 });
 
 $('.place-class').select2({
+  language: "ru",
   ajax: {
     url: '{% url 'place-autocomplete' %}',
-    dataType: 'json'
+    dataType: 'json',
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
   }
 });
 
 $('.keyword-class').select2({
-  ajax: {
+   language: "ru",
+   ajax: {
     url: '{% url 'keyword-autocomplete' %}',
-    dataType: 'json'
+    dataType: 'json',
+    
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
   }
+});
+
+$.fn.select2.amd.define('select2/i18n/ru',[],function () {
+    // Russian
+    return {
+        errorLoading: function () {
+            return 'Результат не может быть загружен.';
+        },
+        inputTooLong: function (args) {
+            var overChars = args.input.length - args.maximum;
+            var message = 'Пожалуйста, удалите ' + overChars + ' символ';
+            if (overChars >= 2 && overChars <= 4) {
+                message += 'а';
+            } else if (overChars >= 5) {
+                message += 'ов';
+            }
+            return message;
+        },
+        inputTooShort: function (args) {
+            var remainingChars = args.minimum - args.input.length;
+
+            var message = 'Пожалуйста, введите ' + remainingChars + ' или более символов';
+
+            return message;
+        },
+        loadingMore: function () {
+            return 'Загружаем ещё ресурсы…';
+        },
+        maximumSelected: function (args) {
+            var message = 'Вы можете выбрать ' + args.maximum + ' элемент';
+
+            if (args.maximum  >= 2 && args.maximum <= 4) {
+                message += 'а';
+            } else if (args.maximum >= 5) {
+                message += 'ов';
+            }
+
+            return message;
+        },
+        noResults: function () {
+          return 'Ничего не найдено';
+        },
+        searching: function () {
+          return 'Поиск…';
+        }
+    };
 });
     </script>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>

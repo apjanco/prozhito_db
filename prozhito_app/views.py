@@ -436,8 +436,8 @@ class PersonAutocomplete(autocomplete.Select2QuerySetView):
         qs = Person.objects.all()
 
         if self.q:
-            q = Q(first_name__icontains=search) | Q(patronymic__icontains=search) | Q(
-                family_name__icontains=search)
+            search = self.q
+            q = Q(first_name__icontains=search) | Q(patronymic__icontains=search) | Q(family_name__icontains=search)
             qs = qs.filter(q)
 
 
@@ -449,7 +449,7 @@ class PlaceAutocomplete(autocomplete.Select2QuerySetView):
         qs = Place.objects.all()
 
         if self.q:
-            q = Q(name__icontains=search)
+            q = Q(name__icontains=self.q)
             qs = qs.filter(q)
 
 
@@ -461,7 +461,7 @@ class KeywordAutocomplete(autocomplete.Select2QuerySetView):
         qs = Keyword.objects.all()
 
         if self.q:
-            q = Q(name__icontains=search)
+            q = Q(name__icontains=self.q)
             qs = qs.filter(q)
 
 
