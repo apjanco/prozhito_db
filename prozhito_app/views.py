@@ -12,6 +12,7 @@ from django.db.models import Q
 import pickle
 from prozhito_app import advanced_search
 from django.http import HttpResponse
+from dal import autocomplete
 
 
 class HomePageView(TemplateView):
@@ -427,4 +428,41 @@ class DiaryJson(BaseDatatableView):
         if search:
             q = Q(author__first_name__icontains=search) | Q(author__patronymic__icontains=search) | Q(author__family_name__icontains=search)
             qs = qs.filter(q)
+        return qs
+
+class PersonAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+
+        qs = Person.objects.all()
+
+        if self.q:
+            q = Q(first_name__icontains=search) | Q(patronymic__icontains=search) | Q(
+                family_name__icontains=search)
+            qs = qs.filter(q)
+
+
+        return qs
+
+class PlaceAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+
+        qs = Place.objects.all()
+
+        if self.q:
+            q = Q(name__icontains=search)
+            qs = qs.filter(q)
+
+
+        return qs
+
+class KeywordAutocomplete(autocomplete.Select2QuerySetView):
+    def get_queryset(self):
+
+        qs = Keyword.objects.all()
+
+        if self.q:
+            q = Q(name__icontains=search)
+            qs = qs.filter(q)
+
+
         return qs

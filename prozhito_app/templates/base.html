@@ -113,25 +113,28 @@
                                 <form class="form-horizontal" role="form">
                                   <div class="form-group">
                                   <label for="amount"></label><input type="text" id="amount" readonly style="border:0;"></p>
-          <div id="slider-range"></div>
+                                    <div id="slider-range">
+                                    </div>
                                   </div>
-                                  <div class="form-group">
+
+                                    <div class="form-group">
                                       <label for="contain">Люди</label>
                                       <select style="width: 100%;" class="people-class form-control" name="people" multiple="multiple">
-
-  <option value="AL">Alabama</option>
-  <option value="WY">Wyoming</option>
-</select>
+                                      </select>
                                   </div>
 
-                                  <div class="form-group">
-                                    <label for="contain">Места</label>
-                                    <input name="places" class="form-control" type="text" />
-                                  </div>
                                     <div class="form-group">
-                                        <label for="contain">Ключевые слова</label>
-                                        <input name="entries" class="form-control" type="text" />
-                                    </div>
+                                      <label for="contain">Места</label>
+                                      <select style="width: 100%;" class="place-class form-control" name="places" multiple="multiple">
+                                      </select>
+                                  </div>
+
+                                    <div class="form-group">
+                                      <label for="contain">Ключевые слова</label>
+                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords" multiple="multiple">
+                                      </select>
+                                  </div>
+
                                     <input type="hidden" value="1800" name="start_year" />
                                     <input type="hidden" value="2018" name="end_year" />
                                   <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
@@ -170,8 +173,31 @@
 $('.dropdown').on('hide.bs.dropdown', function () {
    return false;
 });
-$(".people-class").select2();
 
+
+$('.people-class').select2({
+  ajax: {
+    url: '{% url 'person-autocomplete' %}',
+    dataType: 'json'
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  }
+});
+
+$('.place-class').select2({
+  ajax: {
+    url: '{% url 'place-autocomplete' %}',
+    dataType: 'json'
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  }
+});
+
+$('.keyword-class').select2({
+  ajax: {
+    url: '{% url 'keyword-autocomplete' %}',
+    dataType: 'json'
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  }
+});
     </script>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>
     </div>

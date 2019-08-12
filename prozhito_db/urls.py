@@ -31,5 +31,8 @@ urlpatterns = [
     path('diary-json/', views.DiaryJson.as_view(), name='diary_json'),
     path('people-json/', views.PeopleJson.as_view(), name='people_json'),
     path('places-json/', views.PlacesJson.as_view(), name='places_json'),
-    path('advanced_search_submit/', views.advanced_search_submit, name='advanced_search_submit')
+    path('advanced_search_submit/', views.advanced_search_submit, name='advanced_search_submit'),
+    path('person-autocomplete/', views.PersonAutocomplete.as_view(), name='person-autocomplete'),
+    path('place-autocomplete/', views.PlaceAutocomplete.as_view(), name='place-autocomplete'),
+    path('keyword-autocomplete/', views.KeywordAutocomplete.as_view(), name='keyword-autocomplete'),
 ]
