@@ -10,6 +10,8 @@ from django_markup.markup import formatter
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.db.models import Q
 import pickle
+from prozhito_app import advanced_search
+from django.http import HttpResponse
 
 
 class HomePageView(TemplateView):
@@ -37,6 +39,9 @@ class SearchPageView(TemplateView):
         context['entries'] = Entry.objects.all()[:5]
         return context
 
+def advanced_search_submit(request):
+    context = advanced_search.advanced_search(request)
+    return HttpResponse(context)
 
 class BrowsePageView(TemplateView):
 
