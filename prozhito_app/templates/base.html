@@ -21,7 +21,7 @@
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Button.css' %}">
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Search.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.css">
     <link rel="shortcut icon" href="http://prozhito.org/media/img/favicon.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
@@ -37,19 +37,18 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
 
     
 </head>
 
 <body>
 
-        <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
-                <div class="collapse navbar-collapse" id="navcol-1"">
-                    <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
-                            <style>
-.dropdown.dropdown-lg .dropdown-menu {
+<style>
+
+    .dropdown.dropdown-lg .dropdown-menu {
     margin-top: -1px;
     padding: 6px 20px;
 }
@@ -89,22 +88,17 @@
         min-width: 500px;
     }
 }
-
-    </style>
-
-    <!--
-    <script
-  src="https://code.jquery.com/jquery-3.4.1.min.js"
-  integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
-  crossorigin="anonymous"></script>
--->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
-      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+</style>
+        <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
+                <div class="collapse navbar-collapse" id="navcol-1"">
+                    <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
 
 
-
+<!-- from https://codepen.io/airpwn/pen/pyxpaR -->
   <div class="input-group" id="adv-search">
-                <input type="text" class="form-control" placeholder="Search for snippets" />
+                <input type="text" class="form-control" placeholder="Искать" />
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
                         <div class="dropdown dropdown-lg">
@@ -116,13 +110,17 @@
           <div id="slider-range"></div>
                                   </div>
                                   <div class="form-group">
-                                    <label for="contain">Author</label>
+                                    <label for="contain">Люди</label>
                                     <input class="form-control" type="text" />
                                   </div>
                                   <div class="form-group">
-                                    <label for="contain">Contains the words</label>
+                                    <label for="contain">Места</label>
                                     <input class="form-control" type="text" />
                                   </div>
+                                    <div class="form-group">
+                                        <label for="contain">Ключевые слова</label>
+                                        <input class="form-control" type="text" />
+                                    </div>
                                   <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
                                 </form>
                             </div>
@@ -144,11 +142,11 @@
       max: 2018,
       values: [ 1581, 2018 ],
       slide: function( event, ui ) {
-        $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] );
+        $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] + " года" );
       }
     });
     $( "#amount" ).val( " от " + $( "#slider-range" ).slider( "values", 0 ) +
-      " до " + $( "#slider-range" ).slider( "values", 1 ) );
+      " до " + $( "#slider-range" ).slider( "values", 1 ) + " года");
   } );
     </script>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>

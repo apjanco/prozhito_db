@@ -33,7 +33,6 @@
     <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
     <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
     <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-pencil-square-o"></i>&nbsp;дневниковые записи</button></div>
-<input id="range" type="text"/>
 </div>
 
                 <div class="col-md-6">
@@ -54,7 +53,6 @@
 
 {% if request.get_full_path == '/browse/people/' %}
 <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-<input id="range" type="text"/>
 </div>
 
                 <div class="col-md-6">
@@ -74,7 +72,6 @@
 
 {% if request.get_full_path == '/browse/places/' %}
 <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-<input id="range" type="text"/>
 </div>
 
                 <div class="col-md-6">
@@ -94,7 +91,6 @@
 
 {% if request.get_full_path == '/browse/entries/' %}
 <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-<input id="range" type="text"/>
 </div>
 
                 <div class="col-md-6">
@@ -141,14 +137,6 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 <script>
-// Range Slider
-      var slider = new Slider("#range", {
-        min: 0,
-        max: 100,
-        value: [50, 80],
-        range: true,
-        tooltip: 'always'
-      });
 
 $(document).ready(function() {
 
@@ -203,14 +191,7 @@ $(document).ready(function() {
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 <script>
-// Range Slider
-      var slider = new Slider("#range", {
-        min: 0,
-        max: 100,
-        value: [50, 80],
-        range: true,
-        tooltip: 'always'
-      });
+
 
 $(document).ready(function() {
 
@@ -266,14 +247,7 @@ $(document).ready(function() {
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 <script>
-// Range Slider
-      var slider = new Slider("#range", {
-        min: 0,
-        max: 100,
-        value: [50, 80],
-        range: true,
-        tooltip: 'always'
-      });
+
 
 $(document).ready(function() {
 
@@ -326,14 +300,7 @@ $(document).ready(function() {
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 <script>
-// Range Slider
-      var slider = new Slider("#range", {
-        min: 0,
-        max: 100,
-        value: [50, 80],
-        range: true,
-        tooltip: 'always'
-      });
+
 
 $(document).ready(function() {
 
