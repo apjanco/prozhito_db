@@ -6,24 +6,30 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+
     <title>Прожито-данные</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.3.1/css/bootstrap.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="{% static 'css/Bold-BS4-Footer-Simple.css' %}">
     <link rel="stylesheet" href="{% static 'css/Bold-BS4-Jumbotron-with-Particles-js-1.css' %}">
     <link rel="stylesheet" href="{% static 'css/Bold-BS4-Jumbotron-with-Particles-js.css' %}">
+
     <link rel="stylesheet" href="{% static 'css/Data-Table-1.css' %}">
     <link rel="stylesheet" href="{% static 'css/Data-Table.css' %}">
     <link rel="stylesheet" href="https://cdn.datatables.net/1.10.15/css/dataTables.bootstrap.min.css">
+
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Button.css' %}">
     <link rel="stylesheet" href="{% static 'css/Navigation-with-Search.css' %}">
     <link rel="stylesheet" href="{% static 'css/styles.css' %}">
-    <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.6.2/css/bootstrap-slider.css">
     <link rel="shortcut icon" href="http://prozhito.org/media/img/favicon.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
-<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+
+ <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/dataTables.buttons.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.flash.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.1.3/jszip.min.js"></script>
@@ -31,20 +37,132 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.53/vfs_fonts.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.html5.min.js"></script>
   <script src="https://cdn.datatables.net/buttons/1.5.6/js/buttons.print.min.js"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
+      <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
+<link rel="stylesheet" href="{% static 'css/custom.css' %}">
+
+    
 </head>
 
 <body>
 
+<style>
+
+    .dropdown.dropdown-lg .dropdown-menu {
+    margin-top: -1px;
+    padding: 6px 20px;
+}
+.input-group-btn .btn-group {
+    display: flex !important;
+}
+.btn-group .btn {
+    border-radius: 0;
+    margin-left: -1px;
+}
+.btn-group .btn:last-child {
+    border-top-right-radius: 4px;
+    border-bottom-right-radius: 4px;
+}
+.btn-group .form-horizontal .btn[type="submit"] {
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+.form-horizontal .form-group {
+    margin-left: 0;
+    margin-right: 0;
+}
+.form-group .form-control:last-child {
+    border-top-left-radius: 4px;
+    border-bottom-left-radius: 4px;
+}
+
+@media screen and (min-width: 768px) {
+    #adv-search {
+        width: 500px;
+        margin: 0 auto;
+    }
+    .dropdown.dropdown-lg {
+        position: static !important;
+    }
+    .dropdown.dropdown-lg .dropdown-menu {
+        min-width: 500px;
+    }
+}
+</style>
         <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
                 <div class="collapse navbar-collapse" id="navcol-1"">
                     <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'people' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'SearchPageView' %}"><i class="fa fa-search"></i>&nbsp; Искать</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
+
+
+<!-- from https://codepen.io/airpwn/pen/pyxpaR -->
+ <form action="" method="post">
+      {% csrf_token %}
+  <div class="input-group" id="adv-search">
+                <input name="query" type="text" class="form-control" placeholder="Искать" />
+                <div class="input-group-btn">
+                    <div class="btn-group" role="group">
+                        <div class="dropdown dropdown-lg">
+                            <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown" aria-expanded="false"><span class="caret"></span></button>
+                            <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                <form class="form-horizontal" role="form">
+                                  <div class="form-group">
+                                  <label for="amount"></label><input type="text" id="amount" readonly style="border:0;"></p>
+          <div id="slider-range"></div>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contain">Люди</label>
+                                    <input name="people" class="form-control" type="text" />
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="contain">Места</label>
+                                    <input name="places" class="form-control" type="text" />
+                                  </div>
+                                    <div class="form-group">
+                                        <label for="contain">Ключевые слова</label>
+                                        <input name="entries" class="form-control" type="text" />
+                                    </div>
+                                    <input type="hidden" value="1800" name="start_year" />
+                                    <input type="hidden" value="2018" name="end_year" />
+                                  <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+                                </form>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+                    </div>
+                </div>
+            </div>
+
+ </form>
+
+
+
+    <script>
+
+      $( function() {
+    $( "#slider-range" ).slider({
+      range: true,
+      min: 1581,
+      max: 2018,
+      values: [ 1581, 2018 ],
+      slide: function( event, ui ) {
+        $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] + " года" );
+        $(".form input[name='start_year']").val( ui.values[ 0 ] );
+        $(".form input[name='end_year']").val( ui.values[ 1 ] );
+      }
+    });
+    $( "#amount" ).val( " от " + $( "#slider-range" ).slider( "values", 0 ) +
+      " до " + $( "#slider-range" ).slider( "values", 1 ) + " года");
+
+  } );
+    </script>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>
     </div>
     </nav>
  
+
+
 
 {% block content %}{% endblock %}
 
@@ -52,7 +170,7 @@
   <footer id="myFooter" style="padding:0px;">
         <div class="container-fluid">
             <div class="row text-center">
-                <div class="col footer-social" style="background-color: rgb(255,255,255);"><a class="social-icons" href="#"><i class="fa fa-facebook"></i></a><a class="social-icons" href="#"><i class="fa fa-google-plus"></i></a><a class="social-icons" href="#"><i class="fa fa-twitter"></i></a><a class="social-icons" href="#"><i class="fa fa-linkedin"></i></a></div>
+                <div class="col footer-social" style="background-color: rgb(255,255,255);"><a class="social-icons" href="https://www.facebook.com/prozhito.org/"><i class="fa fa-facebook"></i></a><a class="social-icons" href="https://vk.com/club81096508"><i class="fa fa-vk"></i></a></div>
             </div>
         </div>
     </footer>

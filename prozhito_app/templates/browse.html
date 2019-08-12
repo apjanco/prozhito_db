@@ -1,51 +1,128 @@
 {% extends "base.html" %}
 {% load static %}
+{% load leaflet_tags %}
+{% load geojson_tags %}
+
+  {% leaflet_js %}
+  {% leaflet_css %}
+
+
+
+
+
 
 {% block content %}
+
+
+
+        {% if request.get_full_path == '/' %}
+        {% endif %}
+         {% if request.get_full_path == '/search/' %}
+        {% endif %}
+        {% if not request.get_full_path == '/'  %}
+
     <div></div>
     <div>
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
 
-  {% if request.get_full_path == '/browse/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
-  {% endif %}
-
-{% if request.get_full_path == '/browse/people/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/places/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-
-{% if request.get_full_path == '/browse/entries/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
- {% endif %}
-<input id="range" type="text"/>
+  {% if request.get_full_path == '/browse/diaries/' %}
+<div class="btn-group" role="group">
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-pencil-square-o"></i>&nbsp;дневниковые записи</button></div>
 </div>
 
                 <div class="col-md-6">
-                    <div class="btn-group" role="group"><button class="btn btn-primary active" type="button">Table</button><button class="btn btn-primary" type="button">Freq. Chart</button><button class="btn btn-primary" type="button">Date Chart</button><button class="btn btn-primary" type="button">Map</button></div>
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
                 </div>
-            </div>
         </div>
     </div>
 
     <div></div>
     <div>
 
+  {% endif %}
+
+
+{% if request.get_full_path == '/browse/people/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'people' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/browse/places/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'places' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/browse/entries/' %}
+<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'browse' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'browse' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+        {% endif %}
+
+
         <div class="container">
+            
+{% if request.get_full_path == '/browse/diaries/' %}
 
             <div class="row">
 
                 <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
   <thead>
      <tr>
-        <th> текст </th>
-        <th> Дата </th>
-         <th> автор </th>
+        <th> автор дневника </th>
+        <th> количество записей </th>
+         <th> первая запись</th>
+          <th> последняя запись</th>
      </tr>
   </thead>
 
@@ -60,14 +137,61 @@
  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 <script>
-// Range Slider
-      var slider = new Slider("#range", {
-        min: 0,
-        max: 100,
-        value: [50, 80],
-        range: true,
-        tooltip: 'always'
-      });
+
+$(document).ready(function() {
+
+
+    // DataTable
+    var table = $('.myTable').DataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'diary_json' %}",
+        "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
+        dom: 'Bfrtip',
+        buttons: [
+               'copy',
+               'excel',
+               'csv',
+               'pdf',
+               'print'
+        ]
+    } );
+
+} );
+
+</script>
+{% endif %}
+
+{% if request.get_full_path == '/browse/entries/' %}
+
+            <div class="row">
+
+                <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+     <tr>
+        <th> текст </th>
+        <th> Дата </th>
+         <th> автор </th>
+          <th> key words </th>
+          <th> sentiment </th>
+     </tr>
+  </thead>
+
+    </table></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
+
+<script>
+
 
 $(document).ready(function() {
 
@@ -94,4 +218,116 @@ $(document).ready(function() {
 } );
 
 </script>
+{% endif %}
+
+{% if request.get_full_path == '/browse/people/' %}
+
+
+            <div class="row">
+
+                <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+     <tr>
+          <th> имя </th>
+        <th> отчество </th>
+         <th> фамилия </th>
+         <th> информация </th>
+         <th> дата рождения </th>
+     </tr>
+  </thead>
+
+    </table></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
+
+<script>
+
+
+$(document).ready(function() {
+
+
+    // DataTable
+    var table = $('.myTable').DataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'people_json' %}",
+        "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
+        dom: 'Bfrtip',
+        buttons: [
+               'copy',
+               'excel',
+               'csv',
+               'pdf',
+               'print'
+        ]
+    } );
+
+} );
+
+</script>
+{% endif %}
+
+{% if request.get_full_path == '/browse/places/' %}
+
+            <div class="row">
+
+                <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
+  <thead>
+     <tr>
+          <th> место </th>
+        <th> ссылка </th>
+         <th> координаты </th>
+     </tr>
+  </thead>
+
+    </table></div>
+            </div>
+        </div>
+    </div>
+
+
+
+
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
+
+<script>
+
+
+$(document).ready(function() {
+
+
+    // DataTable
+    var table = $('.myTable').DataTable({
+        // ...
+        "processing": true,
+        "serverSide": true,
+        "ajax": "{% url 'places_json' %}",
+        "language": {
+        "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
+        },
+        dom: 'Bfrtip',
+        buttons: [
+               'copy',
+               'excel',
+               'csv',
+               'pdf',
+               'print'
+        ]
+    } );
+
+} );
+
+</script>
+
+{% endif %}
+
 {% endblock %}

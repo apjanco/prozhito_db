@@ -1,0 +1,122 @@
+{% extends "base.html" %}
+{% load static %}
+
+
+{% block content %}
+
+        {% if not request.get_full_path == '/' or request.get_full_path == '/search/' %}
+
+    <div></div>
+    <div>
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+
+  {% if request.get_full_path == '/chart/diaries/' %}
+<div class="btn-group" role="group">
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'chart' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+  {% endif %}
+
+{% if request.get_full_path == '/chart/people/' %}
+<div class="btn-group" role="group">
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'chart' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'people' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/chart/places/' %}
+<div class="btn-group" role="group">
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'chart' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'places' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+{% if request.get_full_path == '/chart/entries/'%}
+<div class="btn-group" role="group">
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'chart' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'chart' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+</div>
+
+                <div class="col-md-6">
+                    <div class="btn-group" role="group">
+                        <button onclick="window.location.href='{% url 'browse' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'chart' 'entries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
+                        <button onclick="window.location.href='{% url 'map' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+                     </div>
+                </div>
+        </div>
+    </div>
+
+    <div></div>
+    <div>
+
+ {% endif %}
+
+
+        {% endif %}
+
+        <div class="container">
+
+            {% if graph %}
+<script src="https://cdn.plot.ly/plotly-locale-ru-latest.js"></script>
+<div style="width:600;height:500">
+{{ graph|safe }}
+</div>
+<script>Plotly.setPlotConfig({locale: 'ru'})</script>
+
+        </div>
+    </div>\
+{% endif %}
+{% endblock %}

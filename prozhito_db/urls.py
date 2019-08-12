@@ -24,7 +24,12 @@ urlpatterns = [
     path('search/', views.SearchPageView.as_view(), name='SearchPageView'),
     #path('browse/', views.BrowsePageView.as_view(), name='BrowsePageView'),
     path('browse/<type>/', views.browse, name='browse'),
+    path('chart/<entity>/', views.chart, name='chart'),
+    path('map/<entity>/', views.map, name='map'),
     path('export/', views.ExportPageView.as_view(), name='ExportPageView'),
     path('datatable/', views.DiariesJson.as_view(), name='diaries_json'),
-
+    path('diary-json/', views.DiaryJson.as_view(), name='diary_json'),
+    path('people-json/', views.PeopleJson.as_view(), name='people_json'),
+    path('places-json/', views.PlacesJson.as_view(), name='places_json'),
+    path('advanced_search_submit/', views.advanced_search_submit, name='advanced_search_submit')
 ]

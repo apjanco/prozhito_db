@@ -58,6 +58,22 @@ def load_persons(cursor):
             # createdDate
         )
 
+
+def load_diaries(cursor):
+    query = ("SELECT * FROM diary")
+    cursor.execute(query)
+
+    for row in tqdm.tqdm(cursor):
+
+        Diary.objects.update_or_create(
+            id=row[0],
+            author=Person.objects.get_or_create(id=row[1])[0],
+            no_entries=row[3],
+            first_note=row[4],
+            last_note=row[5],
+            )
+
+
 def load_tags(cursor):
     query = ('SELECT * from tags')
     cursor.execute(query)
@@ -206,7 +222,7 @@ def geocode_places():
         if location:
             pnt = Point(location.longitude, location.latitude)
             # add gis
-            place.gis = pnt
+            place.geom = pnt
             place.save()
 
 
@@ -399,7 +415,40 @@ class Command(BaseCommand):
         #TODO Add function to load from sql file, create database, then read from that db
         #load_sql_file()
 
+<<<<<<< HEAD
         
+=======
+        self.stdout.write(self.style.SUCCESS('[*] loading {} persons'.format(get_count(cursor, 'persons'))))
+        #load_persons(cursor)
+
+        self.stdout.write(self.style.SUCCESS('[*] loading {} tags'.format(get_count(cursor, 'tags'))))
+        #load_tags(cursor)
+
+        self.stdout.write(self.style.SUCCESS('[*] loading {} diary entries'.format(get_count(cursor, 'notes'))))
+        #load_notes(cursor)
+
+        self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
+        #load_diaries(cursor)
+
+        self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
+        #update_entries_with_tags(cursor)
+
+        self.stdout.write(self.style.SUCCESS('[*] lemmatizing text of {} diary entries'.format(str(Entry.objects.filter(lemmatized='').count()))))
+        #lemmatize_texts('mystem')
+
+        self.stdout.write(self.style.SUCCESS('[*] geocoding {} places'.format(Place.objects.all().count())))
+        geocode_places()
+
+        self.stdout.write(self.style.SUCCESS('[*] extracting names with Natasha'))
+        #names_extractor()
+        #TODO cluster and remove redundant Natasha persons
+
+        self.stdout.write(self.style.SUCCESS('[*] detecting sentiment with Dostoevsky'))
+        #detect_sentiment()
+
+        self.stdout.write(self.style.SUCCESS('[*] geocoding text of all diary entries'))
+        #geocode_entries()
+>>>>>>> ec7135cee276bd2a50af1c7b1e20c672f96ba359
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
         RuBERT_ents()

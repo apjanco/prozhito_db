@@ -33,3 +33,10 @@ class KeywordAdmin(admin.ModelAdmin):
     pass
 
 admin.site.register(Keyword, KeywordAdmin)
+
+
+class DiaryAdmin(admin.ModelAdmin):
+    search_fields = ['id',]
+    list_filter = ['no_entries','first_note', 'last_note']
+    
+admin.site.register(Diary, DiaryAdmin)
