@@ -54,8 +54,19 @@ class BrowsePageView(TemplateView):
 
 
 def browse(request, type):
+    if request.method == 'POST':
+        #print(request.__dict__)
+        query = request.POST.get('query', None)
+        people = request.POST.get('people', None)
+        places = request.POST.get('places', None)
+        entries = request.POST.get('entries', None)
+        start_year = request.POST.get('start_year', None)
+        end_year = request.POST.get('end_year', None)
+        print(query, people,places,entries, start_year,end_year)
+        return render(request, 'browse.html', )
 
-    return render(request, 'browse.html',)
+    else:
+        return render(request, 'browse.html',)
 
 def map(request, entity):
 
