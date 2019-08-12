@@ -1,13 +1,14 @@
 from django.core.management.base import BaseCommand, CommandError
 from prozhito_app.models import *
-import mysql.connector
+#import mysql.connector
 import tqdm
 
 #for NLP
-#import stanfordnlp
-#from spacy_stanfordnlp import StanfordNLPLanguage
-#from natasha import NamesExtractor
+import stanfordnlp
+from spacy_stanfordnlp import StanfordNLPLanguage
+from natasha import NamesExtractor
 #from pymystem3 import Mystem
+from deeppavlov import configs, build_model
 
 #for geocoding
 from geopy.geocoders import Nominatim
@@ -288,6 +289,108 @@ def wikipedia2vec_entities():
             entry.keywords.add(Keyword.objects.get_or_create(name=entity.title))
             entry.save()
 
+def find_span(result, i):
+    counter = 1
+    while True:
+        if 'I-' in result[1][0][i + counter]:
+            counter += 1
+        else:    
+            return [i, counter + i]
+            False
+
+def RuBERT_ents():
+    snlp = stanfordnlp.Pipeline(lang='ru')
+    nlp = StanfordNLPLanguage(snlp)
+    ner_model = build_model(configs.ner.ner_rus_bert, download=True)  # This will download the model if not present
+    entries = Entry.objects.all()
+    for entry in tqdm.tqdm(entries):
+        doc = nlp(entry.text)
+        for sent in doc.sents:
+            sent_text = " ".join([token.lemma_ for token in sent])
+            result = ner_model([sent_text])
+            for i in range(len(result[0][0])):
+                token = result[0][0][i]
+                ent = result[1][0][i]
+                
+                if 'B-' in ent:  # single token ent
+                    ent_type = ent.split('-')[1]
+                    span = find_span(result, i)
+                    ent_text = ' '.join([token for token in result[0][0][span[0]:span[1]]])
+                    print('found', ent_type, ent_text, 'in span', span)
+                    if ent_type == 'LOC':
+                        try:
+                            geolocator = Nominatim(user_agent="prozhito_db")
+                            location = geolocator.geocode(ent_text)
+                            if location:
+                                place = Place.objects.get_or_create(name=location[0], gis=Point(location.longitude, location.latitude))
+                                entry.places.add(place[0])
+                                entry.save()
+                        except Exception as e:
+                            print(e)
+                    
+                    if ent_type == 'ORG':
+                        Keyword.objects.update_or_create(
+                            name=ent_text,
+                        )
+
+                    if ent_type == 'PER':
+                        
+                        names = ent_text.split(' ')
+                        #if len(names) == 1:
+                        #    person = Person.objects.update_or_create(family_name=names[0], from_natasha=True)
+                        #    entry.people.add(person[0])
+                        #    entry.save()
+                        #    print(f'[*] added person {names[0]} ')
+
+                        if len(names) == 2:
+                            person = Person.objects.update_or_create(first_name=names[0], family_name=names[1], from_natasha=True)
+                            entry.people.add(person[0])
+                            entry.save()
+                            print(f'[*] added person {names[0]} {names[1]} ')
+
+                        if len(names) == 3:
+                            person = Person.objects.update_or_create(first_name=names[0], patronymic=names[1], family_name=names[2], from_natasha=True)
+                            entry.people.add(person[0])
+                            entry.save()
+                            print(f'[*] added person {names[0]} {names[1]} {names[2]} ')    
+
+                        """
+                        # Natasha does not seem to identify names in this context either with tokens or the sentence text.  This 
+                        # does not seem right and would be an effective solution to the problem of two-token ents where it is either
+                        # imiia familiia or imiia otchestvo
+
+                        extractor = NamesExtractor()
+                        matches = extractor(sent_text)
+                        if not len(matches) == 0:
+                            for match in matches:
+                                if match.fact.last:
+                                    person = Person.objects.get_or_create(family_name=match.fact.last, from_natasha=True)
+                                    entry.people.add(person[0])
+                                    entry.save()
+                                    print(f'[*] added person {match.fact.last} ')
+
+                                if match.fact.first and match.fact.last:
+                                    person = Person.objects.get_or_create(first_name=match.fact.first, family_name=match.fact.last, from_natasha=True)
+                                    entry.people.add(person[0])
+                                    entry.save()
+                                    print(f'[*] added person {match.fact.first} {match.fact.last} ')
+
+                                if match.fact.first and match.fact.middle:
+                                    person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, from_natasha=True)
+                                    entry.people.add(person[0])
+                                    entry.save()
+                                    print(f'[*] added person {match.fact.first} {match.fact.last} ')
+
+                                if match.fact.first and match.fact.middle and match.fact.last:
+                                    person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, family_name=match.fact.last, from_natasha=True)
+                                    entry.people.add(person[0])
+                                    entry.save()
+                                    print(f'[*] added person {match.fact.first} {match.fact.middle} {match.fact.last} ')    
+                           """     
+
+                    #TODO use Natasha to identify formatting of tokens to add Person 
+
+
 class Command(BaseCommand):
     help = 'Closes the specified poll for voting'
 
@@ -306,12 +409,15 @@ class Command(BaseCommand):
             'raise_on_warnings': True
         }
 
-        cnx = mysql.connector.connect(**config)
-        cursor = cnx.cursor()
+        #cnx = mysql.connector.connect(**config)
+        #cursor = cnx.cursor()
 
         #TODO Add function to load from sql file, create database, then read from that db
         #load_sql_file()
 
+<<<<<<< HEAD
+        
+=======
         self.stdout.write(self.style.SUCCESS('[*] loading {} persons'.format(get_count(cursor, 'persons'))))
         #load_persons(cursor)
 
@@ -342,9 +448,10 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS('[*] geocoding text of all diary entries'))
         #geocode_entries()
+>>>>>>> ec7135cee276bd2a50af1c7b1e20c672f96ba359
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
-
+        RuBERT_ents()
 
 
         #update_wikilinks()
