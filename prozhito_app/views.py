@@ -13,61 +13,55 @@ import pickle
 from prozhito_app import advanced_search
 from django.http import HttpResponse
 from dal import autocomplete
+from django.shortcuts import redirect
 
 
-class HomePageView(TemplateView):
-
-    template_name = "index.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['entries'] = Entry.objects.all()[:5]
-        return context
-
-    def update_project_state(request):
-        current_state = 'put state here'
-        request.session['project_state'] = current_state
-
-    def update_state(request):
-        current_state = request.session.get('project_state')
-
-class SearchPageView(TemplateView):
-
-    template_name = "search.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['entries'] = Entry.objects.all()[:5]
-        return context
-
-def advanced_search_submit(request):
-    context = advanced_search.advanced_search(request)
-    return HttpResponse(context)
-
-class BrowsePageView(TemplateView):
-
-    template_name = "browse.html"
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['entries'] = Entry.objects.all()[:5]
-        return context
-
-
-def browse(request, type):
+def home(request):
     if request.method == 'POST':
-        #print(request.__dict__)
+        request.session['query'] = request.POST.get('query', None)
+        request.session['people'] = request.POST.get('people', None)
+        request.session['places'] = request.POST.get('places', None)
+        request.session['entries'] = request.POST.get('entries', None)
+        request.session['start_year'] = request.POST.get('start_year', None)
+        request.session['end_year'] = request.POST.get('end_year', None)
+        return redirect('table/diaries')
+    else:
+        return render(request, 'index.html', )
+
+
+def search(request):
+
+    query = request.session.get('query')
+    people = request.session.get('people')
+    places = request.session.get('places')
+    entries = request.session.get('entries')
+    start_year = request.session.get('start_year')
+    end_year = request.session.get('end_year')
+    print(query, people, places, entries, start_year, end_year)
+    return render(request, 'search.html', )
+
+
+def table(request, type):
+    if request.method == 'POST':
         query = request.POST.get('query', None)
         people = request.POST.get('people', None)
         places = request.POST.get('places', None)
         entries = request.POST.get('entries', None)
         start_year = request.POST.get('start_year', None)
         end_year = request.POST.get('end_year', None)
-        print(query, people,places,entries, start_year,end_year)
-        return render(request, 'browse.html', )
+        print(query, people, places, entries, start_year, end_year)
+
+        return render(request, 'table.html', )
 
     else:
-        return render(request, 'browse.html',)
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        entries = request.session.get('entries')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
+        print(query, people, places, entries, start_year, end_year)
+        return render(request, 'table.html',)
 
 def map(request, entity):
 
