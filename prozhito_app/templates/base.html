@@ -136,7 +136,7 @@
                                       </select>
                                   </div>
 
-                                    <input type="hidden" value="1800" name="start_year" />
+                                    <input type="hidden" value="1581" name="start_year" />
                                     <input type="hidden" value="2018" name="end_year" />
                                   <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
                                 </form>
@@ -163,12 +163,17 @@
       values: [ 1581, 2018 ],
       slide: function( event, ui ) {
         $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] + " года" );
-        $(".form input[name='start_year']").val( ui.values[ 0 ] );
-        $(".form input[name='end_year']").val( ui.values[ 1 ] );
+        // window.alert( $("[name='start_year']").val() );
+        $("[name='start_year']").val(ui.values[ 0 ]);
+        $("[name='end_year']").val( ui.values[ 1 ] );
       }
     });
     $( "#amount" ).val( " от " + $( "#slider-range" ).slider( "values", 0 ) +
       " до " + $( "#slider-range" ).slider( "values", 1 ) + " года");
+
+    $("[name='start_year']").val( ui.values[ 0 ] );
+
+    $("[name='end_year']").val( ui.values[ 1 ] );
 
   } );
 $('.dropdown').on('hide.bs.dropdown', function () {
