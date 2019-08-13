@@ -60,7 +60,7 @@ def table(request, type):
         keywords = request.session.get('keywords')
         start_year = request.session.get('start_year')
         end_year = request.session.get('end_year')
-        print(query, people, places, entries, start_year, end_year)
+        print(query, people, places, keywords, start_year, end_year)
         return render(request, 'table.html',)
 
 def map(request, entity):
@@ -427,7 +427,10 @@ class DiaryJson(BaseDatatableView):
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
     def get_queryset(self):
 
+
         qs = Person.objects.all()
+
+
 
         if self.q:
             search = self.q

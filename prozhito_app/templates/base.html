@@ -126,13 +126,13 @@
 
                                     <div class="form-group">
                                       <label for="contain">Места</label>
-                                      <select style="width: 100%;" class="place-class form-control" name="places" multiple="multiple">
+                                      <select style="width: 100%;" class="place-class form-control" name="places" multiple="multiple" value="">
                                       </select>
                                   </div>
 
                                     <div class="form-group">
                                       <label for="contain">Ключевые слова</label>
-                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords" multiple="multiple">
+                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords" multiple="multiple" value="">
                                       </select>
                                   </div>
 
@@ -186,8 +186,17 @@ $('.people-class').select2({
     url: '{% url 'person-autocomplete' %}',
     dataType: 'json',
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
-  }
+  },
+
 });
+
+/*
+$('.people-class').on('select2:select', function (e) {
+    var data = e.params.data;
+    console.log(data.text);
+    $('.people-class').val(data.text);
+});
+*/
 
 $('.place-class').select2({
   language: "ru",
@@ -208,6 +217,7 @@ $('.keyword-class').select2({
   }
 });
 
+//This section customized the response in Russian
 $.fn.select2.amd.define('select2/i18n/ru',[],function () {
     // Russian
     return {
