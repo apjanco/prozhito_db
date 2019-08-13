@@ -105,7 +105,7 @@
  <form action="" method="post" class="myForm">
       {% csrf_token %}
   <div class="input-group" id="adv-search">
-                <input name="query" type="text" class="form-control" placeholder="Искать" />
+                <input name="query" type="text" class="form-control fa" placeholder="&#xf002; Искать" />
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
                         <div class="dropdown dropdown-lg">
@@ -138,11 +138,10 @@
 
                                     <input type="hidden" value="1581" name="start_year" />
                                     <input type="hidden" value="2018" name="end_year" />
-                                  <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+                                  <button type="submit" class="btn btn-outline-primary btn-lg btn-block"><span class="fa fa-search" aria-hidden="true"></span></button>
                                 </form>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
                     </div>
                 </div>
             </div>
