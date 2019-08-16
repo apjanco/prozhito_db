@@ -28,7 +28,7 @@ urlpatterns = [
     ]
 
 urlpatterns += [
-    path('datatable/', views.DiariesJson.as_view(), name='diaries_json'),
+    path('entry-json/', views.EntryJson.as_view(), name='entry_json'),
     path('diary-json/', views.DiaryJson.as_view(), name='diary_json'),
     path('people-json/', views.PeopleJson.as_view(), name='people_json'),
     path('places-json/', views.PlacesJson.as_view(), name='places_json'),

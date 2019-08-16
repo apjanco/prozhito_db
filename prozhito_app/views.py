@@ -15,6 +15,8 @@ from django.http import HttpResponse
 from dal import autocomplete
 from django.shortcuts import redirect
 
+def make_dict(**args):
+    return args
 
 def home(request):
     if request.method == 'POST':
@@ -29,29 +31,28 @@ def home(request):
         return render(request, 'index.html', )
 
 
-def search(request):
-
-    query = request.session.get('query')
-    people = request.session.get('people')
-    places = request.session.get('places')
-    entries = request.session.get('entries')
-    start_year = request.session.get('start_year')
-    end_year = request.session.get('end_year')
-    print(query, people, places, entries, start_year, end_year)
-    return render(request, 'search.html', )
-
-
 def table(request, type):
     if request.method == 'POST':
-        query = request.POST.get('query', None)
-        people = request.POST.get('people', None)
-        places = request.POST.get('places', None)
-        keywords = request.POST.get('keywords', None)
-        start_year = request.POST.get('start_year', None)
-        end_year = request.POST.get('end_year', None)
-        print(query, people, places, keywords, start_year, end_year)
+        # Update state with the current search request
+        request.session['query'] = request.POST.get('query', None)
+        request.session['people'] = request.POST.get('people', None)
+        request.session['places'] = request.POST.get('places', None)
+        request.session['keywords'] = request.POST.get('keywords', None)
+        request.session['start_year'] = request.POST.get('start_year', None)
+        request.session['end_year'] = request.POST.get('end_year', None)
 
-        return render(request, 'table.html', )
+        # Get the current state variable to pass on to the template 
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        keywords = request.session.get('keywords')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
+        
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
+        context = {'state': state}
+        return render(request, 'table.html', context)
 
     else:
         query = request.session.get('query')
@@ -61,34 +62,91 @@ def table(request, type):
         start_year = request.session.get('start_year')
         end_year = request.session.get('end_year')
         print(query, people, places, keywords, start_year, end_year)
-        return render(request, 'table.html',)
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
+        context = {'state': state}
+        return render(request, 'table.html', context)
 
 def map(request, entity):
+    if request.method == 'POST':
+        # Update state with the current search request
+        request.session['query'] = request.POST.get('query', None)
+        request.session['people'] = request.POST.get('people', None)
+        request.session['places'] = request.POST.get('places', None)
+        request.session['keywords'] = request.POST.get('keywords', None)
+        request.session['start_year'] = request.POST.get('start_year', None)
+        request.session['end_year'] = request.POST.get('end_year', None)
 
-    if entity == 'diaries':
-        context = {}
+        # Get the current state variable to pass on to the template 
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        keywords = request.session.get('keywords')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
 
-    if entity == 'people':
-        context = {}
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
 
-    if entity == 'places':
-        places = Place.objects.all()
-        context = {'places': places}
+        if entity == 'diaries':
+            context = {}
+    
+        if entity == 'people':
+            context = {}
+    
+        if entity == 'places':
+            places = Place.objects.all()
+            context = {'places': places}
+    
+    
+        if entity == 'entries':
+            entries = Entry.objects.filter(~Q(places=None) & Q(text__icontains=query))
+            # TODO Good place for a pickle
+            places = [entry.places.all() for entry in entries]
+            all_places = set({})
+            for place in places:
+                for i in place:
+                    all_places.add(i)
+            #For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
+            context = {'places': places, 'state': state}
+    
+    
+        return render(request, 'map.html', context)
 
+    else:
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        keywords = request.session.get('keywords')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
+        print(query, people, places, keywords, start_year, end_year)
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
 
-    if entity == 'entries':
-        entries = Entry.objects.filter(~Q(places=None))
-        # TODO Good place for a pickle
-        places = [entry.places.all() for entry in entries]
-        all_places = set({})
-        for place in places:
-            for i in place:
-                all_places.add(i)
-        #For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
-        context = {'places':places}
+        if entity == 'diaries':
+            context = {}
 
+        if entity == 'people':
+            context = {}
 
-    return render(request, 'map.html', context)
+        if entity == 'places':
+            places = Place.objects.all()
+            context = {'places': places}
+
+        if entity == 'entries':
+            entries = Entry.objects.filter(~Q(places=None) & Q(text__icontains=query))
+            # TODO Good place for a pickle
+            places = [entry.places.all() for entry in entries]
+            all_places = set({})
+            for place in places:
+                for i in place:
+                    all_places.add(i)
+            # For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
+            context = {'places': places, 'state': state}
+
+        return render(request, 'map.html', context)
+
 
 
 def chart(request, entity):
@@ -191,7 +249,7 @@ class ExportPageView(TemplateView):
 
 
 
-class DiariesJson(BaseDatatableView):
+class EntryJson(BaseDatatableView):
     # the model you're going to show
     model = Entry
 
@@ -224,23 +282,6 @@ class DiariesJson(BaseDatatableView):
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
     max_display_length = 500
 
-    def get_initial_queryset(self):
-        query = self.request.session.get('query')
-        people = self.request.session.get('people')
-        places = self.request.session.get('places')
-        keywords = self.request.session.get('keywords')
-        start_year = self.request.session.get('start_year')
-        end_year = self.request.session.get('end_year')
-        
-        
-
-        # return queryset used as base for futher sorting/filtering
-        # these are simply objects displayed in datatable
-        # You should not filter data returned here by any filter values entered by user. This is because
-        # we need some base queryset to count total number of records.
-        q = Q(text__icontains=query) | Q(date_start__icontains=start_year) | Q(date_end__icontains=end_year)|Q(people__id=people) | Q(
-            places__id=places) | Q(keywords__id=keywords)
-        return Entry.objects.filter(q)
     
     def render_column(self, row, column):
         # we want to render 'translation' as a custom column, because 'translation' is defined as a Textfield in Image model,
@@ -259,15 +300,14 @@ class DiariesJson(BaseDatatableView):
             return format_html("<p>{}</p>".format(row.sentiment,))
 
         else:
-            return super(DiariesJson, self).render_column(row, column)
+            return super(EntryJson, self).render_column(row, column)
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
-
+        search = self.request.session.get('query')
         # here is a simple example
-        search = self.request.GET.get('search[value]', None)
         if search:
-            q = Q(text__icontains=search) | Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
+            q = Q(text__icontains=search) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
             qs = qs.filter(q)
         return qs
 
@@ -307,28 +347,6 @@ class PeopleJson(BaseDatatableView):
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
     max_display_length = 500
 
-    #def get_initial_queryset(self):
-    #    query = self.request.session.get('query')
-    #    people = self.request.session.get('people')
-    #    places = self.request.session.get('places')
-    #    keywords = self.request.session.get('keywords')
-    #    start_year = self.request.session.get('start_year')
-    #    end_year = self.request.session.get('end_year')
-
-        #query = self.request.POST.get('query', 'None')
-        #people = self.request.POST.get('people', None)
-        #places = self.request.POST.get('places', None)
-        #keywords = self.request.POST.get('keywords', None)
-        #start_year = self.request.POST.get('start_year', None)
-        #end_year = self.request.POST.get('end_year', None)
-     #   print('query:',query,'people:',people,'places:',places,'keywords:', keywords,start_year,end_year)
-        # return queryset used as base for futher sorting/filtering
-        # these are simply objects displayed in datatable
-        # You should not filter data returned here by any filter values entered by user. This is because
-        # we need some base queryset to count total number of records.
-       # q = Q(info__icontains=query) | Q(id=people) # Q(birth_date__icontains=start_year) | Q(death_date__icontains=end_year) | \
-      #      
-       # return Person.objects.filter(q)
 
     def render_column(self, row, column):
         # we want to render 'translation' as a custom column, because 'translation' is defined as a Textfield in Image model,
@@ -349,29 +367,19 @@ class PeopleJson(BaseDatatableView):
             return super(PeopleJson, self).render_column(row, column)
 
     def filter_queryset(self, qs):
-        # use parameters passed in GET request to filter queryset
+
         query = self.request.session.get('query')
         people = self.request.session.get('people')
-        places = self.request.session.get('places')
-        keywords = self.request.session.get('keywords')
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
-        print('query:', query, 'people:', people, 'places:', places, 'keywords:', keywords, start_year, end_year)
-        # return queryset used as base for futher sorting/filtering
-        # these are simply objects displayed in datatable
-        # You should not filter data returned here by any filter values entered by user. This is because
-        # we need some base queryset to count total number of records.
-        q = Q(info__icontains=query) # | Q(birth_date__icontains=start_year) | Q(death_date__icontains=end_year) | \
-        #    Q(id=people)
-        qs = qs.filter(q)
+            
+        qs = qs.filter(Q(info__icontains=query) |
+                       Q(first_name__icontains=query) |
+                       Q(family_name__icontains=query)
+                       )
         return qs
 
-        # here is a simple example
-        #search = self.request.GET.get('search[value]', None)
-        #if search:
-        #    q = Q(first_name__icontains=search) | Q(family_name__icontains=search) | Q(info__icontains=search)
-        #    qs = qs.filter(q)
-        #return qs
+
 
 
 class PlacesJson(BaseDatatableView):
@@ -418,13 +426,15 @@ class PlacesJson(BaseDatatableView):
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
+        query = self.request.session.get('query')
+        people = self.request.session.get('people')
+        start_year = self.request.session.get('start_year')
+        end_year = self.request.session.get('end_year')
 
-        # here is a simple example
-        search = self.request.GET.get('search[value]', None)
-        if search:
-            q = Q(name__icontains=search) | Q(wiki__icontains=search)
-            qs = qs.filter(q)
+        qs = qs.filter(Q(name__icontains=query)
+                       )
         return qs
+        
 
 class DiaryJson(BaseDatatableView):
     # the model you're going to show
@@ -472,12 +482,15 @@ class DiaryJson(BaseDatatableView):
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
-
-        # here is a simple example
-        search = self.request.GET.get('search[value]', None)
-        if search:
-            q = Q(author__first_name__icontains=search) | Q(author__patronymic__icontains=search) | Q(author__family_name__icontains=search)
-            qs = qs.filter(q)
+        query = self.request.session.get('query')
+        people = self.request.session.get('people')
+        places = self.request.session.get('places')
+        keywords = self.request.session.get('keywords')
+        start_year = self.request.session.get('start_year')
+        end_year = self.request.session.get('end_year')
+        
+        q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | Q(author__family_name__icontains=query)
+        qs = qs.filter(q)
         return qs
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):

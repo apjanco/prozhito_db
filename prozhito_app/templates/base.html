@@ -98,14 +98,29 @@
                 <div class="collapse navbar-collapse" id="navcol-1"">
                     <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
                         <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'home' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'table' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
+                        <form action="" method="post">
+                        {% csrf_token %}
+                        <button type="submit" onclick="window.location.href='{% url 'table' 'diaries' %}'" class="btn btn-link input-group-btn" style="color: black;"><i class="fa fa-book"></i> Листать</button>
+
+
+                            <input name="query" type="hidden" value=""/>
+                            <input name="people" type="hidden" value=""/>
+                            <input name="places" type="hidden" value=""/>
+                            <input name="keywords" type="hidden" value=""/>
+                        </form>
+
+
 
 
 <!-- from https://codepen.io/airpwn/pen/pyxpaR -->
  <form action="" method="post" class="myForm">
       {% csrf_token %}
   <div class="input-group" id="adv-search">
-                <input name="query" type="text" class="form-control fa" placeholder="&#xf002; Искать" />
+                {% if state.query %}
+                <input name="query" style="color: black;" type="text" class="form-control fa" placeholder="{{ state.query }}" />
+                {% else %}
+                <input name="query" style="color: black;" type="text" class="form-control fa" placeholder="&#xf002; Искать" />
+                {% endif %}
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
                         <div class="dropdown dropdown-lg">
