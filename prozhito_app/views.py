@@ -224,6 +224,24 @@ class DiariesJson(BaseDatatableView):
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
     max_display_length = 500
 
+    def get_initial_queryset(self):
+        query = self.request.session.get('query')
+        people = self.request.session.get('people')
+        places = self.request.session.get('places')
+        keywords = self.request.session.get('keywords')
+        start_year = self.request.session.get('start_year')
+        end_year = self.request.session.get('end_year')
+        
+        
+
+        # return queryset used as base for futher sorting/filtering
+        # these are simply objects displayed in datatable
+        # You should not filter data returned here by any filter values entered by user. This is because
+        # we need some base queryset to count total number of records.
+        q = Q(text__icontains=query) | Q(date_start__icontains=start_year) | Q(date_end__icontains=end_year)|Q(people__id=people) | Q(
+            places__id=places) | Q(keywords__id=keywords)
+        return Entry.objects.filter(q)
+    
     def render_column(self, row, column):
         # we want to render 'translation' as a custom column, because 'translation' is defined as a Textfield in Image model,
         # but here we only want to check the status of translating process.
@@ -289,6 +307,29 @@ class PeopleJson(BaseDatatableView):
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
     max_display_length = 500
 
+    #def get_initial_queryset(self):
+    #    query = self.request.session.get('query')
+    #    people = self.request.session.get('people')
+    #    places = self.request.session.get('places')
+    #    keywords = self.request.session.get('keywords')
+    #    start_year = self.request.session.get('start_year')
+    #    end_year = self.request.session.get('end_year')
+
+        #query = self.request.POST.get('query', 'None')
+        #people = self.request.POST.get('people', None)
+        #places = self.request.POST.get('places', None)
+        #keywords = self.request.POST.get('keywords', None)
+        #start_year = self.request.POST.get('start_year', None)
+        #end_year = self.request.POST.get('end_year', None)
+     #   print('query:',query,'people:',people,'places:',places,'keywords:', keywords,start_year,end_year)
+        # return queryset used as base for futher sorting/filtering
+        # these are simply objects displayed in datatable
+        # You should not filter data returned here by any filter values entered by user. This is because
+        # we need some base queryset to count total number of records.
+       # q = Q(info__icontains=query) | Q(id=people) # Q(birth_date__icontains=start_year) | Q(death_date__icontains=end_year) | \
+      #      
+       # return Person.objects.filter(q)
+
     def render_column(self, row, column):
         # we want to render 'translation' as a custom column, because 'translation' is defined as a Textfield in Image model,
         # but here we only want to check the status of translating process.
@@ -309,13 +350,28 @@ class PeopleJson(BaseDatatableView):
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
+        query = self.request.session.get('query')
+        people = self.request.session.get('people')
+        places = self.request.session.get('places')
+        keywords = self.request.session.get('keywords')
+        start_year = self.request.session.get('start_year')
+        end_year = self.request.session.get('end_year')
+        print('query:', query, 'people:', people, 'places:', places, 'keywords:', keywords, start_year, end_year)
+        # return queryset used as base for futher sorting/filtering
+        # these are simply objects displayed in datatable
+        # You should not filter data returned here by any filter values entered by user. This is because
+        # we need some base queryset to count total number of records.
+        q = Q(info__icontains=query) # | Q(birth_date__icontains=start_year) | Q(death_date__icontains=end_year) | \
+        #    Q(id=people)
+        qs = qs.filter(q)
+        return qs
 
         # here is a simple example
-        search = self.request.GET.get('search[value]', None)
-        if search:
-            q = Q(first_name__icontains=search) | Q(last_name__icontains=search) | Q(info__icontains=search)
-            qs = qs.filter(q)
-        return qs
+        #search = self.request.GET.get('search[value]', None)
+        #if search:
+        #    q = Q(first_name__icontains=search) | Q(family_name__icontains=search) | Q(info__icontains=search)
+        #    qs = qs.filter(q)
+        #return qs
 
 
 class PlacesJson(BaseDatatableView):
