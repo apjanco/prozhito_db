@@ -147,12 +147,13 @@ $(document).ready(function() {
     var table = $('.myTable').DataTable({
         // ...
         "processing": true,
+        stateSave: true,
         "serverSide": true,
         "ajax": "{% url 'diary_json' %}",
         "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
         },
-        dom: 'Bfrtip',
+        dom: 'Brtip',
         buttons: [
                'copy',
                'excel',
@@ -202,12 +203,13 @@ $(document).ready(function() {
     var table = $('.myTable').DataTable({
         // ...
         "processing": true,
+        stateSave: true,
         "serverSide": true,
         "ajax": "{% url 'entry_json' %}",
         "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
         },
-        dom: 'Bfrtip',
+        dom: 'Brtip',
         buttons: [
                'copy',
                'excel',
@@ -235,6 +237,7 @@ $(document).ready(function() {
          <th> фамилия </th>
          <th> информация </th>
          <th> дата рождения </th>
+         <th> дата смерти</th>
      </tr>
   </thead>
 
@@ -258,6 +261,7 @@ $(document).ready(function() {
     var table = $('.myTable').DataTable({
         // ...
         "processing": true,
+        stateSave: true,
         "serverSide": true,
         "ajax": "{% url 'people_json' %}",
         "language": {
@@ -311,12 +315,13 @@ $(document).ready(function() {
     var table = $('.myTable').DataTable({
         // ...
         "processing": true,
+        stateSave: true,
         "serverSide": true,
         "ajax": "{% url 'places_json' %}",
         "language": {
         "url": "//cdn.datatables.net/plug-ins/1.10.19/i18n/Russian.json"
         },
-        dom: 'Bfrtip',
+        dom: 'Brtip',
         buttons: [
                'copy',
                'excel',

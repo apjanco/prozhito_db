@@ -89,7 +89,15 @@ def map(request, entity):
                           end_year=end_year)
 
         if entity == 'diaries':
-            context = {}
+            entries = Entry.objects.filter(Q(author=people) & ~Q(places=None))
+            # TODO Good place for a pickle
+            places = [entry.places.all() for entry in entries]
+            all_places = set({})
+            for place in places:
+                for i in place:
+                    all_places.add(i)
+            # For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
+            context = {'places': places, 'state': state}
     
         if entity == 'people':
             context = {}
@@ -289,7 +297,31 @@ class EntryJson(BaseDatatableView):
         # so, if 'translation' is empty, i.e. no one enters any information in 'translation', we display 'waiting';
         # otherwise, we display 'processing'.
         if column == 'text':
-            return format_html("<p>{}</p>".format(formatter(row.text, filter_name='markdown')))
+            return format_html("""
+            {}<button type="button" class="btn btn-default" data-toggle="modal" data-target="#aaa{}">...открыть</button>
+            
+            <!-- Modal -->
+            <div class="modal fade" id="aaa{}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content" style="width: 100%">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLongTitle">{}. {}</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                  <div class="modal-body">
+                    {}
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">...закрыть</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            """.format(formatter(row.text[:150], filter_name='markdown'), row.id, row.id, row.date_start, row.author, formatter(row.text, filter_name='markdown')))
+
         if column == 'date_start':
             return format_html("<p>{}</p>".format(row.date_start,))
         if column == 'author':
@@ -336,12 +368,12 @@ class PeopleJson(BaseDatatableView):
     # define columns that will be returned
     # they should be the fields of your model, and you may customize their displaying contents in render_column()
     # don't worry if your headers are not the same as your field names, you will define the headers in your template
-    columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date',] # 'info', 'birthday', 'deathday', 'wikilink']
+    columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # define column names that will be used in sorting
     # order is important and should be same as order of columns displayed by datatables
     # for non sortable columns use empty value like ''
-    order_columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date',] # 'info', 'birthday', 'deathday', 'wikilink']
+    order_columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # set max limit of records returned
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
@@ -363,6 +395,8 @@ class PeopleJson(BaseDatatableView):
             return format_html("<p>{}</p>".format(row.info,))
         if column == 'birth_date':
             return format_html("<p>{}</p>".format(row.birth_date,))
+        if column == 'death_date':
+            return format_html("<p>{}</p>".format(row.death_date,))
         else:
             return super(PeopleJson, self).render_column(row, column)
 
@@ -469,7 +503,7 @@ class DiaryJson(BaseDatatableView):
         # so, if 'translation' is empty, i.e. no one enters any information in 'translation', we display 'waiting';
         # otherwise, we display 'processing'.
         if column == 'author':
-            return format_html("<p>{}</p>".format(row.author,))
+            return format_html("<a href='http://prozhito.org/person/{}' target='_blank'>{}</a>".format(row.author.id, row.author,))
         if column == 'no_entries':
             return format_html("<p>{}</p>".format(row.no_entries,))
         if column == 'first_note':

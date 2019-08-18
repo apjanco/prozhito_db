@@ -9,25 +9,26 @@
         {% endif %}
         {% if not request.get_full_path == '/'  %}
 
-    <div></div>
+     <div></div>
     <div>
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
 
-  {% if request.get_full_path == '/map/diaries/' %}
+  {% if request.get_full_path == '/table/diaries/' %}
 <div class="btn-group" role="group">
-    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'map' 'diaries' %}'"><i class="fa fa-user-o"></i>&nbsp;дневники&nbsp;</button>
-    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'map' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
-    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'map' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
-    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'map' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+    <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button>
+    <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
+    <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
+    <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-pencil-square-o"></i>&nbsp;дневниковые записи</button></div>
 </div>
 
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button onclick="window.location.href='{% url 'table' 'diaries' %}'" class="btn btn-primary " type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'table' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-table"></i> таблица</button>
                         <button onclick="window.location.href='{% url 'chart' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-bar-chart"></i> график</button>
-                        <button onclick="window.location.href='{% url 'map' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-map"></i> карта</button></div>
+                        <button onclick="window.location.href='{% url 'map' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
+
                      </div>
                 </div>
         </div>
@@ -35,7 +36,6 @@
 
     <div></div>
     <div>
-
   {% endif %}
 
 {% if request.get_full_path == '/map/people/' %}
@@ -109,7 +109,6 @@
         {% endif %}
 
         <!-- Leaflet imports, js for autocomplete -->
-<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.js"></script>
 <!-- Leaflet references -->
  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.5.1/dist/leaflet.css" integrity="sha512-xwE/Az9zrjBIphAcBb3F6JVqxf46+CDLwfLMHloNu6KEQCAWi6HcDUbeOfBIptF7tcCzusKFjFw2yuvEpDL9wQ==" crossorigin=""/>
     <script src="https://unpkg.com/leaflet@1.5.1/dist/leaflet.js" integrity="sha512-GffPMF3RvMeYyc1LWMHtK8EbPv0iNZ8/oTtHPx9/cc2ILxQ+u905qIwdpULaqDkyBKgOaB57QTMg7ztg8Jm2Og==" crossorigin=""></script>
@@ -157,5 +156,6 @@
     }).addTo(mymap);
 
   </script>
+ <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.0.0/bootstrap-slider.min.js"></script>
 
 {% endblock %}
