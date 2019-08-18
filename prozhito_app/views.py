@@ -458,11 +458,28 @@ class EntryJson(BaseDatatableView):
 
     def filter_queryset(self, qs):
         # use parameters passed in GET request to filter queryset
-        search = self.request.session.get('query')
-        # here is a simple example
-        if search:
-            q = Q(text__icontains=search) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
-            qs = qs.filter(q)
+        query = self.request.session.get('query')
+        people = self.request.session.get('people')
+        start_year = self.request.session.get('start_year')
+        end_year = self.request.session.get('end_year')
+        if start_year or end_year:
+            try:
+                start_year = '{}-01-01'.format(start_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('start_year=', start_year)
+
+            try:
+                end_year = '{}-12-31'.format(end_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('end_year=', end_year)
+
+            dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
+            qs = qs.filter(dates)
+        
+        q = Q(text__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
+        qs = qs.filter(q)
         return qs
 
 
@@ -528,20 +545,21 @@ class PeopleJson(BaseDatatableView):
         people = self.request.session.get('people')
         
         start_year = self.request.session.get('start_year')
-        try:
-            start_year = '{}-01-01'.format(start_year)
-        except django.core.exceptions.ValidationError:
-            pass
-        
         end_year = self.request.session.get('end_year')
-        try:
-            end_year = '{}-12-31'.format(end_year)
-        except django.core.exceptions.ValidationError:
-            pass
-        
-        dates = Q(birth_date__gte=start_year) & Q(death_date__lte=end_year)
+        if start_year or end_year:
+            try:
+                start_year = '{}-01-01'.format(start_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            
+            try:
+                end_year = '{}-12-31'.format(end_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            dates = Q(birth_date__gte=start_year) & Q(death_date__lte=end_year)
+            qs = qs.filter(dates)
+
         q = Q(info__icontains=query) | Q(first_name__icontains=query) | Q(family_name__icontains=query)
-        qs = qs.filter(dates)
         qs = qs.filter(q)
         return qs
 
@@ -596,6 +614,7 @@ class PlacesJson(BaseDatatableView):
         people = self.request.session.get('people')
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
+
 
         qs = qs.filter(Q(name__icontains=query)
                        )
@@ -653,21 +672,27 @@ class DiaryJson(BaseDatatableView):
         places = self.request.session.get('places')
         keywords = self.request.session.get('keywords')
         start_year = self.request.session.get('start_year')
-        try:
-            start_year = '{}-01-01'.format(start_year)
-        except django.core.exceptions.ValidationError:
-            pass
-        print('start_year=', start_year)
         end_year = self.request.session.get('end_year')
-        try:
-            end_year = '{}-12-31'.format(end_year)
-        except django.core.exceptions.ValidationError:
-            pass
-        print('end_year=', end_year)
-        dates = Q(first_note__gte=start_year) & Q(last_note__lte=end_year)
+
+        if start_year or end_year:
+            try:
+                start_year = '{}-01-01'.format(start_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('start_year=', start_year)
+            
+            try:
+                end_year = '{}-12-31'.format(end_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('end_year=', end_year)
+            
+            dates = Q(first_note__gte=start_year) & Q(last_note__lte=end_year)
+            qs = qs.filter(dates)
+            
         q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | \
             Q(author__family_name__icontains=query)
-        qs = qs.filter(dates)
+        
         qs = qs.filter(q)
         return qs
 
