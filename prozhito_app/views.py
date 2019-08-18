@@ -368,12 +368,12 @@ class PeopleJson(BaseDatatableView):
     # define columns that will be returned
     # they should be the fields of your model, and you may customize their displaying contents in render_column()
     # don't worry if your headers are not the same as your field names, you will define the headers in your template
-    columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
+    columns = ['family_name', 'first_name', 'patronymic', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # define column names that will be used in sorting
     # order is important and should be same as order of columns displayed by datatables
     # for non sortable columns use empty value like ''
-    order_columns = ['first_name', 'patronymic', 'family_name', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
+    order_columns = ['family_name','first_name', 'patronymic', 'info', 'birth_date', 'death_date'] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # set max limit of records returned
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
@@ -385,12 +385,12 @@ class PeopleJson(BaseDatatableView):
         # but here we only want to check the status of translating process.
         # so, if 'translation' is empty, i.e. no one enters any information in 'translation', we display 'waiting';
         # otherwise, we display 'processing'.
-        if column == 'text':
-            return format_html("<p>{}</p>".format(row.first_name,))
+        if column == 'family_name':
+            return format_html("<p>{}</p>".format(row.family_name,))
         if column == 'patronymic':
             return format_html("<p>{}</p>".format(row.patronymic,))
-        if column == 'author':
-            return format_html("<p>{}</p>".format(row.family_name,))
+        if column == 'first_name':
+            return format_html("<p>{}</p>".format(row.first_name,))
         if column == 'info':
             return format_html("<p>{}</p>".format(row.info,))
         if column == 'birth_date':

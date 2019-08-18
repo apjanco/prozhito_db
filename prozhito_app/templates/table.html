@@ -26,9 +26,20 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
+                    {% if state.start_year%}
+                 от <span class="badge badge-dark">{{ state.start_year }}</span>
+                    {% endif %}
+                    {% if state.end_year %}
+                    до <span class="badge badge-dark">{{ state.end_year }}</span>
+                    {% endif %}
+                </div>
+            </div>
 
   {% if request.get_full_path == '/table/diaries/' %}
-<div class="btn-group" role="group">
+           <div class="row">
+                <div class="col-md-6">
+
+                    <div class="btn-group" role="group">
     <button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button>
     <button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button>
     <button class="btn btn-primary" type="button" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button>
@@ -52,7 +63,9 @@
 
 
 {% if request.get_full_path == '/table/people/' %}
-        <div class="well well-sm">{{ state }}</div>
+           <div class="row">
+                <div class="col-md-6">
+
 
 <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
 </div>
@@ -73,7 +86,10 @@
  {% endif %}
 
 {% if request.get_full_path == '/table/places/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+           <div class="row">
+                <div class="col-md-6">
+
+        <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
 </div>
 
                 <div class="col-md-6">
@@ -92,7 +108,10 @@
  {% endif %}
 
 {% if request.get_full_path == '/table/entries/' %}
-<div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
+           <div class="row">
+                <div class="col-md-6">
+
+        <div class="btn-group" role="group"><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'diaries' %}'"><i class="fa fa-book"></i>&nbsp;дневники&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'people' %}'"><i class="fa fa-user-o"></i>&nbsp;люди&nbsp;</button><button class="btn btn-primary" type="button" onclick="window.location.href='{% url 'table' 'places' %}'"><i class="fa fa-map-marker"></i>&nbsp;местa</button><button class="btn btn-primary active" type="button" onclick="window.location.href='{% url 'table' 'entries' %}'"><i class="fa fa-book"></i>&nbsp;дневниковые записи</button></div>
 </div>
 
                 <div class="col-md-6">
@@ -115,6 +134,8 @@
         <div class="container">
             
 {% if request.get_full_path == '/table/diaries/' %}
+           <div class="row">
+                <div class="col-md-6">
 
             <div class="row">
 
@@ -232,9 +253,9 @@ $(document).ready(function() {
                 <div class="col"><table class="myTable" class="table table-striped table-bordered" cellspacing="0" width="100%">
   <thead>
      <tr>
-          <th> имя </th>
-        <th> отчество </th>
          <th> фамилия </th>
+         <th> имя </th>
+        <th> отчество </th>
          <th> информация </th>
          <th> дата рождения </th>
          <th> дата смерти</th>
