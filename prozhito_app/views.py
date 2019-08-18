@@ -15,8 +15,10 @@ from django.http import HttpResponse
 from dal import autocomplete
 from django.shortcuts import redirect
 
-def make_dict(**args):
+
+def make_dict(**args):  # Used to create a dictionary of the current state
     return args
+
 
 def home(request):
     if request.method == 'POST':
@@ -67,6 +69,7 @@ def table(request, type):
         context = {'state': state}
         return render(request, 'table.html', context)
 
+
 def map(request, entity):
     if request.method == 'POST':
         # Update state with the current search request
@@ -106,7 +109,6 @@ def map(request, entity):
             places = Place.objects.all()
             context = {'places': places}
     
-    
         if entity == 'entries':
             entries = Entry.objects.filter(~Q(places=None) & Q(text__icontains=query))
             # TODO Good place for a pickle
@@ -117,7 +119,6 @@ def map(request, entity):
                     all_places.add(i)
             #For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
             context = {'places': places, 'state': state}
-    
     
         return render(request, 'map.html', context)
 
@@ -158,92 +159,213 @@ def map(request, entity):
 
 
 def chart(request, entity):
-    if entity == 'entries':
-        layout = go.Layout(
-            title="<b>Количество записей в дневнике по месяцам и годам</b>",
-            xaxis={'title': 'год'}, yaxis={'title': 'количество'},
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+    
+    if request.method == 'POST':
+        # Update state with the current search request
+        request.session['query'] = request.POST.get('query', None)
+        request.session['people'] = request.POST.get('people', None)
+        request.session['places'] = request.POST.get('places', None)
+        request.session['keywords'] = request.POST.get('keywords', None)
+        request.session['start_year'] = request.POST.get('start_year', None)
+        request.session['end_year'] = request.POST.get('end_year', None)
 
-        figure = go.Figure(layout=layout)
-        
-        qs = pickle.load(open("/srv/prozhito_db/prozhito_app/entry_date_count.pickle", "rb"))
-        #qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
-        x = [q['date_start'] for q in qs]
-        y = [q['date_start__count'] for q in qs]
+        # Get the current state variable to pass on to the template
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        keywords = request.session.get('keywords')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
 
-        figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
-            color='#E4653F',
-            size=5),
-                                    ))
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
 
-        div = opy.plot(figure, auto_open=False, output_type='div')
-        context = {'graph':div}
+        if entity == 'entries':
+            layout = go.Layout(
+                title="<b>Количество записей в дневнике по месяцам и годам</b>",
+                xaxis={'title': 'год'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
 
-    if entity == 'people':
-        layout = go.Layout(
-            title="<b>Количество упоминаний человека по фамилии</b>",
-            xaxis={'title': 'фамилия'}, yaxis={'title': 'количество'},
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+            figure = go.Figure(layout=layout)
 
-        figure = go.Figure(layout=layout)
+            qs = pickle.load(open("/srv/prozhito_db/prozhito_app/entry_date_count.pickle", "rb"))
+            #qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
+            x = [q['date_start'] for q in qs]
+            y = [q['date_start__count'] for q in qs]
 
-        qs = Entry.objects.order_by('people__family_name').values('people__family_name').distinct().annotate(Count('people__family_name'))
-        x = [q['people__family_name'] for q in qs]
-        y = [q['people__family_name__count'] for q in qs]
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
 
-        figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
-            color='#E4653F',
-            size=5),
-                                    ))
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph':div}
 
-        div = opy.plot(figure, auto_open=False, output_type='div')
-        context = {'graph':div}
+        if entity == 'people':
+            layout = go.Layout(
+                title="<b>Количество упоминаний человека по фамилии</b>",
+                xaxis={'title': 'фамилия'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
 
-    if entity == 'places':
-        layout = go.Layout(
-            title="<b>Количество упоминаний места</b>",
-            xaxis={'title': 'места'}, yaxis={'title': 'количество'},
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+            figure = go.Figure(layout=layout)
 
-        figure = go.Figure(layout=layout)
+            qs = Entry.objects.order_by('people__family_name').values('people__family_name').distinct().annotate(Count('people__family_name'))
+            x = [q['people__family_name'] for q in qs]
+            y = [q['people__family_name__count'] for q in qs]
 
-        qs = Entry.objects.order_by('places__name').values('places__name').distinct().annotate(Count('places__name'))
-        x = [q['places__name'] for q in qs]
-        y = [q['places__name__count'] for q in qs]
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
 
-        figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
-            color='#E4653F',
-            size=5),
-                                    ))
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph':div}
 
-        div = opy.plot(figure, auto_open=False, output_type='div')
-        context = {'graph':div}
+        if entity == 'places':
+            layout = go.Layout(
+                title="<b>Количество упоминаний места</b>",
+                xaxis={'title': 'места'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
 
-    if entity == 'diaries':
-        layout = go.Layout(
-            title="<b>Количество записей в дневнике по автору</b>",
-            xaxis={'title': 'автор', 'showticklabels':False,}, yaxis={'title': 'количество'},
-            paper_bgcolor='rgba(0,0,0,0)',
-            plot_bgcolor='rgba(0,0,0,0)')
+            figure = go.Figure(layout=layout)
 
-        figure = go.Figure(layout=layout)
+            qs = Entry.objects.order_by('places__name').values('places__name').distinct().annotate(Count('places__name'))
+            x = [q['places__name'] for q in qs]
+            y = [q['places__name__count'] for q in qs]
 
-        qs = Diary.objects.all().order_by('no_entries')
-        x = [' '.join([str(q.author.first_name), str(q.author.patronymic), str(q.author.family_name)]) for q in qs]
-        y = [q.no_entries for q in qs]
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
 
-        figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
-            color='#E4653F',
-            size=5),
-                                    ))
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph':div}
 
-        div = opy.plot(figure, auto_open=False, output_type='div')
-        context = {'graph':div}
+        if entity == 'diaries':
+            layout = go.Layout(
+                title="<b>Количество записей в дневнике по автору</b>",
+                xaxis={'title': 'автор', 'showticklabels':False,}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
 
-    return render(request, 'chart.html', context)
+            figure = go.Figure(layout=layout)
+
+            qs = Diary.objects.all().order_by('no_entries')
+            x = [' '.join([str(q.author.first_name), str(q.author.patronymic), str(q.author.family_name)]) for q in qs]
+            y = [q.no_entries for q in qs]
+
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
+
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph':div, 'state': state}
+
+        return render(request, 'chart.html', context)
+
+    else:
+        query = request.session.get('query')
+        people = request.session.get('people')
+        places = request.session.get('places')
+        keywords = request.session.get('keywords')
+        start_year = request.session.get('start_year')
+        end_year = request.session.get('end_year')
+        print(query, people, places, keywords, start_year, end_year)
+        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                          end_year=end_year)
+        context = {'state': state}
+
+        if entity == 'entries':
+            layout = go.Layout(
+                title="<b>Количество записей в дневнике по месяцам и годам</b>",
+                xaxis={'title': 'год'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
+
+            figure = go.Figure(layout=layout)
+
+            qs = pickle.load(open("/srv/prozhito_db/prozhito_app/entry_date_count.pickle", "rb"))
+            # qs = Entry.objects.order_by().values('date_start').distinct().annotate(Count('date_start'))
+            x = [q['date_start'] for q in qs]
+            y = [q['date_start__count'] for q in qs]
+
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
+
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph': div}
+
+        if entity == 'people':
+            layout = go.Layout(
+                title="<b>Количество упоминаний человека по фамилии</b>",
+                xaxis={'title': 'фамилия'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
+
+            figure = go.Figure(layout=layout)
+
+            qs = Entry.objects.order_by('people__family_name').values('people__family_name').distinct().annotate(
+                Count('people__family_name'))
+            x = [q['people__family_name'] for q in qs]
+            y = [q['people__family_name__count'] for q in qs]
+
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
+
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph': div}
+
+        if entity == 'places':
+            layout = go.Layout(
+                title="<b>Количество упоминаний места</b>",
+                xaxis={'title': 'места'}, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
+
+            figure = go.Figure(layout=layout)
+
+            qs = Entry.objects.order_by('places__name').values('places__name').distinct().annotate(Count('places__name'))
+            x = [q['places__name'] for q in qs]
+            y = [q['places__name__count'] for q in qs]
+
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
+
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph': div}
+
+        if entity == 'diaries':
+            layout = go.Layout(
+                title="<b>Количество записей в дневнике по автору</b>",
+                xaxis={'title': 'автор', 'showticklabels': False, }, yaxis={'title': 'количество'},
+                paper_bgcolor='rgba(0,0,0,0)',
+                plot_bgcolor='rgba(0,0,0,0)')
+
+            figure = go.Figure(layout=layout)
+
+            qs = Diary.objects.all().order_by('no_entries')
+            x = [' '.join([str(q.author.first_name), str(q.author.patronymic), str(q.author.family_name)]) for q in qs]
+            y = [q.no_entries for q in qs]
+
+            figure.add_trace(go.Scatter(x=x, y=y, mode="markers", marker=dict(
+                color='#E4653F',
+                size=5),
+                                        ))
+
+            div = opy.plot(figure, auto_open=False, output_type='div')
+            context = {'graph': div, 'state': state}
+
+        return render(request, 'chart.html', context)
 
 
 class ExportPageView(TemplateView):
@@ -404,13 +526,23 @@ class PeopleJson(BaseDatatableView):
 
         query = self.request.session.get('query')
         people = self.request.session.get('people')
+        
         start_year = self.request.session.get('start_year')
+        try:
+            start_year = '{}-01-01'.format(start_year)
+        except django.core.exceptions.ValidationError:
+            pass
+        
         end_year = self.request.session.get('end_year')
-            
-        qs = qs.filter(Q(info__icontains=query) |
-                       Q(first_name__icontains=query) |
-                       Q(family_name__icontains=query)
-                       )
+        try:
+            end_year = '{}-12-31'.format(end_year)
+        except django.core.exceptions.ValidationError:
+            pass
+        
+        dates = Q(birth_date__gte=start_year) & Q(death_date__lte=end_year)
+        q = Q(info__icontains=query) | Q(first_name__icontains=query) | Q(family_name__icontains=query)
+        qs = qs.filter(dates)
+        qs = qs.filter(q)
         return qs
 
 
@@ -521,9 +653,21 @@ class DiaryJson(BaseDatatableView):
         places = self.request.session.get('places')
         keywords = self.request.session.get('keywords')
         start_year = self.request.session.get('start_year')
+        try:
+            start_year = '{}-01-01'.format(start_year)
+        except django.core.exceptions.ValidationError:
+            pass
+        print('start_year=', start_year)
         end_year = self.request.session.get('end_year')
-        
-        q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | Q(author__family_name__icontains=query)
+        try:
+            end_year = '{}-12-31'.format(end_year)
+        except django.core.exceptions.ValidationError:
+            pass
+        print('end_year=', end_year)
+        dates = Q(first_note__gte=start_year) & Q(last_note__lte=end_year)
+        q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | \
+            Q(author__family_name__icontains=query)
+        qs = qs.filter(dates)
         qs = qs.filter(q)
         return qs
 
