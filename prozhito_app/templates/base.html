@@ -128,26 +128,22 @@
                             <div class="dropdown-menu dropdown-menu-right" role="menu">
                                 <form class="form-horizontal" role="form">
                                   <div class="form-group">
-                                  <label for="amount"></label><input type="text" id="amount" readonly style="border:0;"></p>
-                                    <div id="slider-range">
-                                    </div>
+                                  <label for="amount"></label><input type="text" id="amount" readonly style="border:0;">
+                                    <div id="slider-range"></div>
                                   </div>
 
                                     <div class="form-group">
-                                      <label for="contain">Люди</label>
-                                      <select style="width: 100%;" class="people-class form-control" name="people" multiple="multiple">
+                                      <select style="width: 100%;" class="people-class form-control" name="people" >
                                       </select>
                                   </div>
 
                                     <div class="form-group">
-                                      <label for="contain">Места</label>
-                                      <select style="width: 100%;" class="place-class form-control" name="places" multiple="multiple" value="">
+                                      <select style="width: 100%;" class="place-class form-control" name="places"  value="">
                                       </select>
                                   </div>
 
                                     <div class="form-group">
-                                      <label for="contain">Ключевые слова</label>
-                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords" multiple="multiple" value="">
+                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords"  value="">
                                       </select>
                                   </div>
 
@@ -167,14 +163,17 @@
 
     <script>
 
-
       $( function() {
 
     $( "#slider-range" ).slider({
       range: true,
       min: 1581,
       max: 2018,
+          {% if state.start_year and state.end_year %}
+      values: [ {{ state.start_year}}, {{state.end_year }} ],
+          {% else %}
       values: [ 1581, 2018 ],
+          {% endif %}
       slide: function( event, ui ) {
         $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] + " года" );
         // window.alert( $("[name='start_year']").val() );
@@ -196,14 +195,19 @@ $('.dropdown').on('hide.bs.dropdown', function () {
 
 
 $('.people-class').select2({
+  multiple: false,
   language: "ru",
   ajax: {
     url: '{% url 'person-autocomplete' %}',
     dataType: 'json',
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
   },
-
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Люди'
+  }
 });
+
 
 /*
 $('.people-class').on('select2:select', function (e) {
@@ -214,21 +218,31 @@ $('.people-class').on('select2:select', function (e) {
 */
 
 $('.place-class').select2({
+  multiple: false,
   language: "ru",
   ajax: {
     url: '{% url 'place-autocomplete' %}',
     dataType: 'json',
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  },
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Места'
   }
 });
 
 $('.keyword-class').select2({
+   multiple: false,
    language: "ru",
    ajax: {
     url: '{% url 'keyword-autocomplete' %}',
     dataType: 'json',
     
     // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  },
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Ключевые слова'
   }
 });
 

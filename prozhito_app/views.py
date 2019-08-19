@@ -90,9 +90,9 @@ def map(request, entity):
 
         state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
                           end_year=end_year)
-
+        context = {'state': state }
         if entity == 'diaries':
-            entries = Entry.objects.filter(Q(author=people) & ~Q(places=None))
+            entries = Entry.objects.filter(~Q(places=None) & Q(date_start__gte=start_year) & Q(date_start__lte=end_year))
             # TODO Good place for a pickle
             places = [entry.places.all() for entry in entries]
             all_places = set({})
@@ -100,17 +100,18 @@ def map(request, entity):
                 for i in place:
                     all_places.add(i)
             # For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
-            context = {'places': places, 'state': state}
+            context['places'] = places
     
         if entity == 'people':
             context = {}
     
         if entity == 'places':
             places = Place.objects.all()
-            context = {'places': places}
-    
+            context['places'] = places
+
         if entity == 'entries':
-            entries = Entry.objects.filter(~Q(places=None) & Q(text__icontains=query))
+            entries = Entry.objects.filter(~Q(places=None) & Q(date_start__gte=start_year) & Q(date_start__lte=end_year))
+            entries = entries.filter(Q(text__icontains=query))
             # TODO Good place for a pickle
             places = [entry.places.all() for entry in entries]
             all_places = set({})
@@ -118,8 +119,8 @@ def map(request, entity):
                 for i in place:
                     all_places.add(i)
             #For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
-            context = {'places': places, 'state': state}
-    
+            context['places']= places
+
         return render(request, 'map.html', context)
 
     else:
@@ -130,29 +131,71 @@ def map(request, entity):
         start_year = request.session.get('start_year')
         end_year = request.session.get('end_year')
         print(query, people, places, keywords, start_year, end_year)
+
         state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
                           end_year=end_year)
+        context = {'state': state}
 
         if entity == 'diaries':
-            context = {}
+            entries = Entry.objects.filter(~Q(places=None))
+            if query:
+                entries =  entries.filter(Q(text__icontains=query))
 
-        if entity == 'people':
-            context = {}
+            if start_year or end_year:
+                try:
+                    start_year = '{}-01-01'.format(start_year)
+                except django.core.exceptions.ValidationError:
+                    pass
 
-        if entity == 'places':
-            places = Place.objects.all()
-            context = {'places': places}
+                try:
+                    end_year = '{}-12-31'.format(end_year)
+                except django.core.exceptions.ValidationError:
+                    pass
 
-        if entity == 'entries':
-            entries = Entry.objects.filter(~Q(places=None) & Q(text__icontains=query))
-            # TODO Good place for a pickle
+                dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
+                entries = entries.filter(dates)
+
             places = [entry.places.all() for entry in entries]
             all_places = set({})
             for place in places:
                 for i in place:
                     all_places.add(i)
             # For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
-            context = {'places': places, 'state': state}
+            context['places'] = all_places
+
+        if entity == 'people':
+            context = {}
+
+        if entity == 'places':
+            places = Place.objects.all()
+            context['places'] = places
+
+        if entity == 'entries':
+            entries = Entry.objects.filter(~Q(places=None))
+            if query:
+                entries = entries.filter(Q(text__icontains=query))
+
+            if start_year or end_year:
+                try:
+                    start_year = '{}-01-01'.format(start_year)
+                except django.core.exceptions.ValidationError:
+                    pass
+
+                try:
+                    end_year = '{}-12-31'.format(end_year)
+                except django.core.exceptions.ValidationError:
+                    pass
+
+                dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
+                entries = entries.filter(dates)
+
+            places = [entry.places.all() for entry in entries]
+            all_places = set({})
+            for place in places:
+                for i in place:
+                    all_places.add(i)
+            # For this map, what's most helpful is not places (which will equal all places), but frequency of entries per place
+            context['places'] = all_places
 
         return render(request, 'map.html', context)
 
@@ -420,7 +463,7 @@ class EntryJson(BaseDatatableView):
         # otherwise, we display 'processing'.
         if column == 'text':
             return format_html("""
-            {}<button type="button" class="btn btn-default" data-toggle="modal" data-target="#aaa{}">...открыть</button>
+            {}<button type="button" class="btn btn-default" style="color: #ea6645;" data-toggle="modal" data-target="#aaa{}">...открыть</button>
             
             <!-- Modal -->
             <div class="modal fade" id="aaa{}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
