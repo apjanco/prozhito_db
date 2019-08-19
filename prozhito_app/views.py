@@ -19,16 +19,31 @@ from django.shortcuts import redirect
 def make_dict(**args):  # Used to create a dictionary of the current state
     return args
 
+def update_state(request):
+    request.session['query'] = request.POST.get('query', None)
+    request.session['people'] = request.POST.get('people', None)
+    request.session['places'] = request.POST.get('places', None)
+    request.session['keywords'] = request.POST.get('keywords', None)
+    request.session['start_year'] = request.POST.get('start_year', None)
+    request.session['end_year'] = request.POST.get('end_year', None)
+    
+def get_state(request):
+    query = request.session.get('query')
+    people = request.session.get('people')
+    places = request.session.get('places')
+    keywords = request.session.get('keywords')
+    start_year = request.session.get('start_year')
+    end_year = request.session.get('end_year')
+
+    state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
+                      end_year=end_year)
+    return state
 
 def home(request):
     if request.method == 'POST':
-        request.session['query'] = request.POST.get('query', None)
-        request.session['people'] = request.POST.get('people', None)
-        request.session['places'] = request.POST.get('places', None)
-        request.session['keywords'] = request.POST.get('keywords', None)
-        request.session['start_year'] = request.POST.get('start_year', None)
-        request.session['end_year'] = request.POST.get('end_year', None)
+        update_state(request)
         return redirect('table/diaries')
+    
     else:
         return render(request, 'index.html', )
 
@@ -36,36 +51,15 @@ def home(request):
 def table(request, type):
     if request.method == 'POST':
         # Update state with the current search request
-        request.session['query'] = request.POST.get('query', None)
-        request.session['people'] = request.POST.get('people', None)
-        request.session['places'] = request.POST.get('places', None)
-        request.session['keywords'] = request.POST.get('keywords', None)
-        request.session['start_year'] = request.POST.get('start_year', None)
-        request.session['end_year'] = request.POST.get('end_year', None)
+        update_state(request)
 
         # Get the current state variable to pass on to the template 
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
-        
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
+        state = get_state(request)
         context = {'state': state}
         return render(request, 'table.html', context)
 
     else:
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
-        print(query, people, places, keywords, start_year, end_year)
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
+        state = get_state(request)
         context = {'state': state}
         return render(request, 'table.html', context)
 
@@ -73,23 +67,11 @@ def table(request, type):
 def map(request, entity):
     if request.method == 'POST':
         # Update state with the current search request
-        request.session['query'] = request.POST.get('query', None)
-        request.session['people'] = request.POST.get('people', None)
-        request.session['places'] = request.POST.get('places', None)
-        request.session['keywords'] = request.POST.get('keywords', None)
-        request.session['start_year'] = request.POST.get('start_year', None)
-        request.session['end_year'] = request.POST.get('end_year', None)
+        update_state(request)
 
         # Get the current state variable to pass on to the template 
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
+        state = get_state(request)
 
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
         context = {'state': state }
         if entity == 'diaries':
             entries = Entry.objects.filter(~Q(places=None) & Q(date_start__gte=start_year) & Q(date_start__lte=end_year))
@@ -124,16 +106,7 @@ def map(request, entity):
         return render(request, 'map.html', context)
 
     else:
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
-        print(query, people, places, keywords, start_year, end_year)
-
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
+        state = get_state(request)
         context = {'state': state}
 
         if entity == 'diaries':
@@ -205,23 +178,10 @@ def chart(request, entity):
     
     if request.method == 'POST':
         # Update state with the current search request
-        request.session['query'] = request.POST.get('query', None)
-        request.session['people'] = request.POST.get('people', None)
-        request.session['places'] = request.POST.get('places', None)
-        request.session['keywords'] = request.POST.get('keywords', None)
-        request.session['start_year'] = request.POST.get('start_year', None)
-        request.session['end_year'] = request.POST.get('end_year', None)
+        update_state(request)
 
         # Get the current state variable to pass on to the template
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
-
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
+        state = get_state(request)
 
         if entity == 'entries':
             layout = go.Layout(
@@ -311,15 +271,7 @@ def chart(request, entity):
         return render(request, 'chart.html', context)
 
     else:
-        query = request.session.get('query')
-        people = request.session.get('people')
-        places = request.session.get('places')
-        keywords = request.session.get('keywords')
-        start_year = request.session.get('start_year')
-        end_year = request.session.get('end_year')
-        print(query, people, places, keywords, start_year, end_year)
-        state = make_dict(query=query, people=people, places=places, keywords=keywords, start_year=start_year,
-                          end_year=end_year)
+        state = get_state(request)
         context = {'state': state}
 
         if entity == 'entries':
@@ -505,6 +457,7 @@ class EntryJson(BaseDatatableView):
         people = self.request.session.get('people')
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
+
         if start_year or end_year:
             try:
                 start_year = '{}-01-01'.format(start_year)
@@ -521,8 +474,15 @@ class EntryJson(BaseDatatableView):
             dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
             qs = qs.filter(dates)
         
-        q = Q(text__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
-        qs = qs.filter(q)
+        if query:
+            q = Q(text__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
+            qs = qs.filter(q)
+
+        if people:
+            print(int(people))
+            q = Q(people__id=int(people))
+            qs = qs.filter(q)
+
         return qs
 
 
@@ -602,8 +562,15 @@ class PeopleJson(BaseDatatableView):
             dates = Q(birth_date__gte=start_year) & Q(death_date__lte=end_year)
             qs = qs.filter(dates)
 
-        q = Q(info__icontains=query) | Q(first_name__icontains=query) | Q(family_name__icontains=query)
-        qs = qs.filter(q)
+        if query:
+            q = Q(info__icontains=query) | Q(first_name__icontains=query) | Q(family_name__icontains=query)
+            qs = qs.filter(q)
+        
+        if people:
+            print(people, "it's peoples!")
+            q = Q(id=int(people))
+            qs = qs.filter(q)
+
         return qs
 
 
@@ -717,26 +684,38 @@ class DiaryJson(BaseDatatableView):
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
 
+        if people:
+            print(people)
+            q = Q(author=int(people))
+
+            qs = qs.filter(q)
+            print('people', len(qs))
+        
         if start_year or end_year:
             try:
                 start_year = '{}-01-01'.format(start_year)
             except django.core.exceptions.ValidationError:
-                pass
+                start_year = None
             print('start_year=', start_year)
             
             try:
                 end_year = '{}-12-31'.format(end_year)
             except django.core.exceptions.ValidationError:
-                pass
+                end_year = None
             print('end_year=', end_year)
-            
-            dates = Q(first_note__gte=start_year) & Q(last_note__lte=end_year)
+
+
+            dates = Q(first_note__gte=start_year)|Q(first_note__isnull=True) & Q(last_note__lte=end_year)|Q(last_note__isnull=True)
             qs = qs.filter(dates)
-            
-        q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | \
-            Q(author__family_name__icontains=query)
+            print('dates', len(qs))
         
-        qs = qs.filter(q)
+        if query:
+            q = Q(author__first_name__icontains=query) | Q(author__patronymic__icontains=query) | \
+                Q(author__family_name__icontains=query)
+            
+            qs = qs.filter(q)
+            print('query', len(qs))
+            
         return qs
 
 class PersonAutocomplete(autocomplete.Select2QuerySetView):
