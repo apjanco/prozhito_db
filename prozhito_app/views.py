@@ -458,6 +458,12 @@ class EntryJson(BaseDatatableView):
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
 
+        if people:
+            print(int(people))
+            q = Q(people__id__in=[int(people)]) | Q(author__in=[int(people)])
+            qs = qs.filter(q)
+            print('I haz this many peoples', len(qs))
+
         if start_year or end_year:
             try:
                 start_year = '{}-01-01'.format(start_year)
@@ -471,17 +477,13 @@ class EntryJson(BaseDatatableView):
                 pass
             print('end_year=', end_year)
 
-            dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
-            qs = qs.filter(dates)
-        
+            #dates = Q(date_start__gte=start_year)|Q(date_start__isnull=True) & Q(date_start__lte=end_year)|Q(date_start__isnull=True)
+            #qs = qs.filter(dates)
+
         if query:
             q = Q(text__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
             qs = qs.filter(q)
 
-        if people:
-            print(int(people))
-            q = Q(people__id=int(people))
-            qs = qs.filter(q)
 
         return qs
 
@@ -559,7 +561,7 @@ class PeopleJson(BaseDatatableView):
                 end_year = '{}-12-31'.format(end_year)
             except django.core.exceptions.ValidationError:
                 pass
-            dates = Q(birth_date__gte=start_year) & Q(death_date__lte=end_year)
+            dates = Q(birth_date__gte=start_year)| Q(birth_date__isnull=True) & Q(death_date__lte=end_year)|Q(death_date__isnull=True)
             qs = qs.filter(dates)
 
         if query:
@@ -589,12 +591,12 @@ class PlacesJson(BaseDatatableView):
     # define columns that will be returned
     # they should be the fields of your model, and you may customize their displaying contents in render_column()
     # don't worry if your headers are not the same as your field names, you will define the headers in your template
-    columns = ['name', 'wiki', 'geom',] # 'info', 'birthday', 'deathday', 'wikilink']
+    columns = ['name', 'wiki', 'date', 'geom',] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # define column names that will be used in sorting
     # order is important and should be same as order of columns displayed by datatables
     # for non sortable columns use empty value like ''
-    order_columns = ['name', 'wiki', 'geom',] # 'info', 'birthday', 'deathday', 'wikilink']
+    order_columns = ['name', 'wiki', 'date', 'geom',] # 'info', 'birthday', 'deathday', 'wikilink']
 
     # set max limit of records returned
     # this is used to protect your site if someone tries to attack your site and make it return huge amount of data
@@ -609,6 +611,8 @@ class PlacesJson(BaseDatatableView):
             return format_html("<p>{}</p>".format(row.name,))
         if column == 'wiki':
             return format_html("<p>{}</p>".format(row.wiki,))
+        if column == 'date':
+            return format_html("<p>{}</p>".format([i.date_start for i in Entry.objects.filter(places=row.id)]))
         if column == 'geom':
             try:
                 return format_html("<p>{},{}</p>".format(row.geom.x, row.geom.y))
@@ -624,12 +628,36 @@ class PlacesJson(BaseDatatableView):
         people = self.request.session.get('people')
         start_year = self.request.session.get('start_year')
         end_year = self.request.session.get('end_year')
+        places = self.request.session.get('places')
 
+        #qs = Entry.objects.filter(places__id__in=[places])
 
-        qs = qs.filter(Q(name__icontains=query)
-                       )
-        return qs
-        
+        if people:
+            q = Q(entry__people__id__in=[int(people)]) | Q(entry__author__in=[int(people)])
+            qs = qs.filter(q)
+
+        if start_year or end_year:
+            try:
+                start_year = '{}-01-01'.format(start_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('start_year=', start_year)
+
+            try:
+                end_year = '{}-12-31'.format(end_year)
+            except django.core.exceptions.ValidationError:
+                pass
+            print('end_year=', end_year)
+
+            dates = Q(entry__date_start__gte=start_year)|Q(entry__date_start__isnull=True) & Q(entry__date_start__lte=end_year)|Q(entry__date_start__isnull=True)
+            qs = qs.filter(dates)
+
+        if query:
+            q = Q(name__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
+            qs = qs.filter(q)
+        #qs = [entry.places.all()[0] for entry in qs]  #Note the [0], this will need to be changed when select2 multi is working
+        return qs.distinct()
+
 
 class DiaryJson(BaseDatatableView):
     # the model you're going to show
