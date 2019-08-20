@@ -26,6 +26,9 @@
     <link rel="shortcut icon" href="http://prozhito.org/media/img/favicon.png" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" rel="stylesheet" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.min.js"></script>
+
 
  <link rel="stylesheet" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
@@ -40,6 +43,7 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.js"></script>
       <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <link rel="stylesheet" href="{% static 'css/custom.css' %}">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/i18n/ru.js"></script>
 
     
 </head>
@@ -88,19 +92,35 @@
         min-width: 500px;
     }
 }
+
 </style>
         <nav class="navbar navbar-light navbar-expand-md navigation-clean-button" style="margin-bottom: 20px;">
                 <div class="collapse navbar-collapse" id="navcol-1"">
                     <ul class="nav navbar-nav mr-auto" style="padding-left: 40px;>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'HomePageView' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
-                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'browse' 'diaries' %}"><i class="fa fa-book"></i>&nbsp; Листать</a></li>
+                        <li class="nav-item" role="presentation"><a class="nav-link" href="{% url 'home' %}"><i style="border-bottom: 2px solid #ea6645;" class="fa fa-home"></i>&nbsp;</a></li>
+                        <form action="" method="post">
+                        {% csrf_token %}
+                        <button type="submit" onclick="window.location.href='{% url 'table' 'diaries' %}'" class="btn btn-link input-group-btn" style="color: black;"><i class="fa fa-book"></i> Листать</button>
+
+
+                            <input name="query" type="hidden" value=""/>
+                            <input name="people" type="hidden" value=""/>
+                            <input name="places" type="hidden" value=""/>
+                            <input name="keywords" type="hidden" value=""/>
+                        </form>
+
+
 
 
 <!-- from https://codepen.io/airpwn/pen/pyxpaR -->
- <form action="" method="post">
+ <form action="" method="post" class="myForm">
       {% csrf_token %}
   <div class="input-group" id="adv-search">
-                <input name="query" type="text" class="form-control" placeholder="Искать" />
+                {% if state.query %}
+                <input name="query" style="color: black;" type="text" class="form-control fa" placeholder="{{ state.query }}" />
+                {% else %}
+                <input name="query" style="color: black;" type="text" class="form-control fa" placeholder="&#xf002; Искать" />
+                {% endif %}
                 <div class="input-group-btn">
                     <div class="btn-group" role="group">
                         <div class="dropdown dropdown-lg">
@@ -108,28 +128,30 @@
                             <div class="dropdown-menu dropdown-menu-right" role="menu">
                                 <form class="form-horizontal" role="form">
                                   <div class="form-group">
-                                  <label for="amount"></label><input type="text" id="amount" readonly style="border:0;"></p>
-          <div id="slider-range"></div>
+                                  <label for="amount"></label><input type="text" id="amount" readonly style="border:0;">
+                                    <div id="slider-range"></div>
                                   </div>
-                                  <div class="form-group">
-                                    <label for="contain">Люди</label>
-                                    <input name="people" class="form-control" type="text" />
-                                  </div>
-                                  <div class="form-group">
-                                    <label for="contain">Места</label>
-                                    <input name="places" class="form-control" type="text" />
-                                  </div>
+
                                     <div class="form-group">
-                                        <label for="contain">Ключевые слова</label>
-                                        <input name="entries" class="form-control" type="text" />
-                                    </div>
-                                    <input type="hidden" value="1800" name="start_year" />
+                                      <select style="width: 100%;" class="people-class form-control" name="people"></select>
+                                  </div>
+
+                                    <div class="form-group">
+                                      <select style="width: 100%;" class="place-class form-control" name="places"  value="">
+                                      </select>
+                                  </div>
+
+                                    <div class="form-group">
+                                      <select style="width: 100%;" class="keyword-class form-control" name="keywords"  value="">
+                                      </select>
+                                  </div>
+
+                                    <input type="hidden" value="1581" name="start_year" />
                                     <input type="hidden" value="2018" name="end_year" />
-                                  <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
+                                  <button type="submit" class="btn btn-outline-primary btn-lg btn-block"><span class="fa fa-search" aria-hidden="true"></span></button>
                                 </form>
                             </div>
                         </div>
-                        <button type="submit" class="btn btn-primary"><span class="fa fa-search" aria-hidden="true"></span></button>
                     </div>
                 </div>
             </div>
@@ -141,21 +163,134 @@
     <script>
 
       $( function() {
+
     $( "#slider-range" ).slider({
       range: true,
       min: 1581,
       max: 2018,
+          {% if state.start_year and state.end_year %}
+      values: [ {{ state.start_year}}, {{state.end_year }} ],
+          {% else %}
       values: [ 1581, 2018 ],
+          {% endif %}
       slide: function( event, ui ) {
         $( "#amount" ).val( " от " + ui.values[ 0 ] + " до " + ui.values[ 1 ] + " года" );
-        $(".form input[name='start_year']").val( ui.values[ 0 ] );
-        $(".form input[name='end_year']").val( ui.values[ 1 ] );
+        // window.alert( $("[name='start_year']").val() );
+        $("[name='start_year']").val(ui.values[ 0 ]);
+        $("[name='end_year']").val( ui.values[ 1 ] );
       }
     });
     $( "#amount" ).val( " от " + $( "#slider-range" ).slider( "values", 0 ) +
       " до " + $( "#slider-range" ).slider( "values", 1 ) + " года");
 
+    $("[name='start_year']").val( ui.values[ 0 ] );
+
+    $("[name='end_year']").val( ui.values[ 1 ] );
+
   } );
+$('.dropdown').on('hide.bs.dropdown', function () {
+   return false;
+});
+
+
+$('.people-class').select2({
+  multiple: false,
+  language: "ru",
+  ajax: {
+    url: '{% url 'person-autocomplete' %}',
+    dataType: 'json',
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  },
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Люди'
+  }
+});
+
+
+/*
+$('.people-class').on('select2:select', function (e) {
+    var data = e.params.data;
+    console.log(data.text);
+    $('.people-class').val(data.text);
+});
+*/
+
+$('.place-class').select2({
+  multiple: false,
+  language: "ru",
+  ajax: {
+    url: '{% url 'place-autocomplete' %}',
+    dataType: 'json',
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  },
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Места'
+  }
+});
+
+$('.keyword-class').select2({
+   multiple: false,
+   language: "ru",
+   ajax: {
+    url: '{% url 'keyword-autocomplete' %}',
+    dataType: 'json',
+    
+    // Additional AJAX parameters go here; see the end of this chapter for the full code of this example
+  },
+  placeholder: {
+    id: '-1', // the value of the option
+    text: 'Ключевые слова'
+  }
+});
+
+//This section customized the response in Russian
+$.fn.select2.amd.define('select2/i18n/ru',[],function () {
+    // Russian
+    return {
+        errorLoading: function () {
+            return 'Результат не может быть загружен.';
+        },
+        inputTooLong: function (args) {
+            var overChars = args.input.length - args.maximum;
+            var message = 'Пожалуйста, удалите ' + overChars + ' символ';
+            if (overChars >= 2 && overChars <= 4) {
+                message += 'а';
+            } else if (overChars >= 5) {
+                message += 'ов';
+            }
+            return message;
+        },
+        inputTooShort: function (args) {
+            var remainingChars = args.minimum - args.input.length;
+
+            var message = 'Пожалуйста, введите ' + remainingChars + ' или более символов';
+
+            return message;
+        },
+        loadingMore: function () {
+            return 'Загружаем ещё ресурсы…';
+        },
+        maximumSelected: function (args) {
+            var message = 'Вы можете выбрать ' + args.maximum + ' элемент';
+
+            if (args.maximum  >= 2 && args.maximum <= 4) {
+                message += 'а';
+            } else if (args.maximum >= 5) {
+                message += 'ов';
+            }
+
+            return message;
+        },
+        noResults: function () {
+          return 'Ничего не найдено';
+        },
+        searching: function () {
+          return 'Поиск…';
+        }
+    };
+});
     </script>
                     </ul><span class="navbar-text actions" style="padding-right: 40px;"> <a class="btn btn-light action-button" style="background:  #ea6645;" role="button" href="{% url 'ExportPageView' %}">Скачать</a></span></div>
     </div>

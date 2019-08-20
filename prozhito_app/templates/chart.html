@@ -11,6 +11,16 @@
         <div class="container">
             <div class="row">
                 <div class="col-md-6">
+                    {% if state.start_year%}
+                 от <span class="badge badge-dark">{{ state.start_year }}</span>
+                    {% endif %}
+                    {% if state.end_year %}
+                    до <span class="badge badge-dark">{{ state.end_year }}</span>
+                    {% endif %}
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
 
   {% if request.get_full_path == '/chart/diaries/' %}
 <div class="btn-group" role="group">
@@ -22,7 +32,7 @@
 
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button onclick="window.location.href='{% url 'browse' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'table' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
                         <button onclick="window.location.href='{% url 'chart' 'diaries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
                         <button onclick="window.location.href='{% url 'map' 'diaries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
                      </div>
@@ -45,7 +55,7 @@
 
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button onclick="window.location.href='{% url 'browse' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'table' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
                         <button onclick="window.location.href='{% url 'chart' 'people' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
                         <button onclick="window.location.href='{% url 'map' 'people' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
                      </div>
@@ -68,7 +78,7 @@
 
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button onclick="window.location.href='{% url 'browse' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'table' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
                         <button onclick="window.location.href='{% url 'chart' 'places' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
                         <button onclick="window.location.href='{% url 'map' 'places' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
                      </div>
@@ -91,7 +101,7 @@
 
                 <div class="col-md-6">
                     <div class="btn-group" role="group">
-                        <button onclick="window.location.href='{% url 'browse' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
+                        <button onclick="window.location.href='{% url 'table' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-table"></i> таблица</button>
                         <button onclick="window.location.href='{% url 'chart' 'entries' %}'" class="btn btn-primary active" type="button"><i class="fa fa-bar-chart"></i> график</button>
                         <button onclick="window.location.href='{% url 'map' 'entries' %}'" class="btn btn-primary" type="button"><i class="fa fa-map"></i> карта</button></div>
                      </div>

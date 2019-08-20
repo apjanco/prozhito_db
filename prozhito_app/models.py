@@ -59,6 +59,12 @@ class Entry(models.Model):
     sentiment = models.CharField(max_length=220, blank=True, null=True)
     RuBERT = models.BooleanField(default=False)
 
+    @property
+    def popupContent(self):
+        return '<b>{}</b>'.format(
+            self.text[:100],
+        )
+
     def __str__(self):
         return self.text[:100]
 
