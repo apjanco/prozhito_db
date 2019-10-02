@@ -57,6 +57,7 @@ class Entry(models.Model):
     places = models.ManyToManyField(Place, blank=True, verbose_name="Place(s)")
     diary = models.IntegerField(default=None)
     sentiment = models.CharField(max_length=220, blank=True, null=True)
+    RuBERT = models.BooleanField(default=False)
 
     @property
     def popupContent(self):

@@ -13,6 +13,7 @@ from deeppavlov import configs, build_model
 #for geocoding
 from geopy.geocoders import Nominatim
 from django.contrib.gis.geos import Point
+from django.db.models import Q
 
 #for sentiment
 #from dostoevsky.tokenization import UDBaselineTokenizer, RegexTokenizer
@@ -217,13 +218,16 @@ def lemmatize_texts(lemmatizer):
 def geocode_places():
     places = Place.objects.all()
     for place in tqdm.tqdm(places):
-        geolocator = Nominatim(user_agent="prozhito_db")
-        location = geolocator.geocode(place.name)
-        if location:
-            pnt = Point(location.longitude, location.latitude)
-            # add gis
-            place.geom = pnt
-            place.save()
+        try:
+            geolocator = Nominatim(user_agent="prozhito_db")
+            location = geolocator.geocode(place.name)
+            if location:
+                pnt = Point(location.longitude, location.latitude)
+                # add gis
+                place.geom = pnt
+                place.save()
+        except Exception as e:
+            print(e)
 
 
 def geocode_entries():
@@ -299,100 +303,131 @@ def find_span(result, i):
             False
 
 def RuBERT_ents():
-    snlp = stanfordnlp.Pipeline(lang='ru')
-    nlp = StanfordNLPLanguage(snlp)
+    deleted_entries = []
+    entries = Entry.objects.filter(~Q(RuBERT=True)) #Load all entries where RuBERT is not true
+    # Split the process into blocks of 1000 to avoid RuntimeError: CUDA out of memory
+    snlp = stanfordnlp.Pipeline(lang='ru', use_gpu=False)
     ner_model = build_model(configs.ner.ner_rus_bert, download=True)  # This will download the model if not present
-    entries = Entry.objects.all()
     for entry in tqdm.tqdm(entries):
-        doc = nlp(entry.text)
-        for sent in doc.sents:
-            sent_text = " ".join([token.lemma_ for token in sent])
-            result = ner_model([sent_text])
-            for i in range(len(result[0][0])):
-                token = result[0][0][i]
-                ent = result[1][0][i]
-                
-                if 'B-' in ent:  # single token ent
-                    ent_type = ent.split('-')[1]
-                    span = find_span(result, i)
-                    ent_text = ' '.join([token for token in result[0][0][span[0]:span[1]]])
-                    print('found', ent_type, ent_text, 'in span', span)
-                    if ent_type == 'LOC':
-                        try:
-                            geolocator = Nominatim(user_agent="prozhito_db")
-                            location = geolocator.geocode(ent_text)
-                            if location:
-                                place = Place.objects.get_or_create(name=location[0], gis=Point(location.longitude, location.latitude))
-                                entry.places.add(place[0])
-                                entry.save()
-                        except Exception as e:
-                            print(e)
-                    
-                    if ent_type == 'ORG':
-                        Keyword.objects.update_or_create(
-                            name=ent_text,
-                        )
+        try: 
+            if entry.text is not None and len(entry.text) > 0:  
+                # Error in entry
+                """{'_state': <django.db.models.base.ModelState at 0x7fcc7e6ef5f8>,
+                 'id': 226316,
+                 'text': '          ',
+                 'lemmatized': '          \n',
+                 'date_start': datetime.date(1943, 3, 23),
+                 'date_end': None,
+                 'author_id': 978,
+                 'diary': 988,
+                 'sentiment': None,
+                 'RuBERT': False}"""
+                #Throws stanfordnlp assertion error, assert input_str is not None and len(input_str) > 0, conll.py line 20
+                #Deleted the entry and all runs well, come back to this if reocurring
+                            
+                nlp = StanfordNLPLanguage(snlp)
+                doc = nlp(entry.text)
+                block_size = 200
+                token_blocks = [doc [i * block_size:(i+1) * block_size] for i in range((len(doc) + block_size - 1) // block_size)]
+                for block in token_blocks:
+                    sent_text = " ".join([token.lemma_ for token in block]) #Limit to first 510 subtokens to avoid 'RuntimeError: input sequence after bert tokenization shouldn't exceed 512 tokens.''
+                    try:
+                        result = ner_model([sent_text])
+                        for i in range(len(result[0][0])):
+                            token = result[0][0][i]
+                            ent = result[1][0][i]
+                            
+                            if 'B-' in ent:  # single token ent
+                                ent_type = ent.split('-')[1]
+                                span = find_span(result, i)
+                                ent_text = ' '.join([token for token in result[0][0][span[0]:span[1]]])
+                                print('found', ent_type, ent_text, 'in span', span)
+                                if ent_type == 'LOC':
+                                    try:
+                                        geolocator = Nominatim(user_agent="prozhito_db")
+                                        location = geolocator.geocode(ent_text)
+                                        if location:
+                                            place = Place.objects.get_or_create(name=location[0], geom=Point(location.longitude, location.latitude))
+                                            entry.places.add(place[0])
+                                            entry.save()
+                                    except Exception as e:
+                                        print(e)
+                                        place = Place.objects.get_or_create(name=ent_text,)
+                                        entry.places.add(place[0])
+                                        entry.save()
+                                
+                                if ent_type == 'ORG':
+                                    Keyword.objects.update_or_create(
+                                        name=ent_text,
+                                    )
 
-                    if ent_type == 'PER':
-                        
-                        names = ent_text.split(' ')
-                        #if len(names) == 1:
-                        #    person = Person.objects.update_or_create(family_name=names[0], from_natasha=True)
-                        #    entry.people.add(person[0])
-                        #    entry.save()
-                        #    print(f'[*] added person {names[0]} ')
+                                if ent_type == 'PER':
+                                    extractor = NamesExtractor()
+                                    matches = extractor(sent_text)
+                                    if not len(matches) == 0:
+                                        for match in matches:
+                                            if match.fact.last:
+                                                person = Person.objects.get_or_create(family_name=match.fact.last, from_natasha=True)
+                                                entry.people.add(person[0])
+                                                entry.save()
+                                                print(f'[*] added person {match.fact.last} ')
 
-                        if len(names) == 2:
-                            person = Person.objects.update_or_create(first_name=names[0], family_name=names[1], from_natasha=True)
-                            entry.people.add(person[0])
-                            entry.save()
-                            print(f'[*] added person {names[0]} {names[1]} ')
+                                            if match.fact.first and match.fact.last:
+                                                person = Person.objects.get_or_create(first_name=match.fact.first, family_name=match.fact.last, from_natasha=True)
+                                                entry.people.add(person[0])
+                                                entry.save()
+                                                print(f'[*] added person {match.fact.first} {match.fact.last} ')
 
-                        if len(names) == 3:
-                            person = Person.objects.update_or_create(first_name=names[0], patronymic=names[1], family_name=names[2], from_natasha=True)
-                            entry.people.add(person[0])
-                            entry.save()
-                            print(f'[*] added person {names[0]} {names[1]} {names[2]} ')    
+                                            if match.fact.first and match.fact.middle:
+                                                person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, from_natasha=True)
+                                                entry.people.add(person[0])
+                                                entry.save()
+                                                print(f'[*] added person {match.fact.first} {match.fact.last} ')
 
-                        """
-                        # Natasha does not seem to identify names in this context either with tokens or the sentence text.  This 
-                        # does not seem right and would be an effective solution to the problem of two-token ents where it is either
-                        # imiia familiia or imiia otchestvo
+                                            if match.fact.first and match.fact.middle and match.fact.last:
+                                                person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, family_name=match.fact.last, from_natasha=True)
+                                                entry.people.add(person[0])
+                                                entry.save()
+                                                print(f'[*] added person {match.fact.first} {match.fact.middle} {match.fact.last} ')    
 
-                        extractor = NamesExtractor()
-                        matches = extractor(sent_text)
-                        if not len(matches) == 0:
-                            for match in matches:
-                                if match.fact.last:
-                                    person = Person.objects.get_or_create(family_name=match.fact.last, from_natasha=True)
-                                    entry.people.add(person[0])
-                                    entry.save()
-                                    print(f'[*] added person {match.fact.last} ')
 
-                                if match.fact.first and match.fact.last:
-                                    person = Person.objects.get_or_create(first_name=match.fact.first, family_name=match.fact.last, from_natasha=True)
-                                    entry.people.add(person[0])
-                                    entry.save()
-                                    print(f'[*] added person {match.fact.first} {match.fact.last} ')
+                                    else:
+                                        names = ent_text.split(' ')
+                                        #if len(names) == 1:
+                                        #    person = Person.objects.update_or_create(family_name=names[0], from_natasha=True)
+                                        #    entry.people.add(person[0])
+                                        #    entry.save()
+                                        #    print(f'[*] added person {names[0]} ')
 
-                                if match.fact.first and match.fact.middle:
-                                    person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, from_natasha=True)
-                                    entry.people.add(person[0])
-                                    entry.save()
-                                    print(f'[*] added person {match.fact.first} {match.fact.last} ')
+                                        #if len(names) == 2:
+                                        #    person = Person.objects.update_or_create(first_name=names[0], family_name=names[1], from_natasha=True)
+                                        #    entry.people.add(person[0])
+                                        #    entry.save()
+                                        #    print(f'[*] added person {names[0]} {names[1]} ')
+                                        punct = ['.',',','-',';',':']
+                                        if len(names) == 3:
+                                            if not [token in punct for token in names]:
+                                                person = Person.objects.update_or_create(first_name=names[0], patronymic=names[1], family_name=names[2], from_natasha=True)
+                                                entry.people.add(person[0])
+                                                entry.save()
+                                                print(f'[*] added person {names[0]} {names[1]} {names[2]} ')    
 
-                                if match.fact.first and match.fact.middle and match.fact.last:
-                                    person = Person.objects.get_or_create(first_name=match.fact.first, patronymic=match.fact.middle, family_name=match.fact.last, from_natasha=True)
-                                    entry.people.add(person[0])
-                                    entry.save()
-                                    print(f'[*] added person {match.fact.first} {match.fact.middle} {match.fact.last} ')    
-                           """     
+                    except Exception as e:
+                        print(e)
 
-                    #TODO use Natasha to identify formatting of tokens to add Person 
+                entry.RuBERT = True
+                entry.save()
+        except AssertionError:
+            print(f"Stanfordnlp assertion error, deleting entry {entry.id}")
+            deleted_entries.append(entry)
+            entry.delete()
+
+    [print(entry.id, entry.text) for entry in deleted_entries]
+
 
 
 class Command(BaseCommand):
-    help = 'Closes the specified poll for voting'
+    help = 'Imports data from the Prozhito mysql database into the postgis db for prozhito_db'
 
     def add_arguments(self, parser):
         parser.add_argument('db_name', nargs='+', type=str)
@@ -415,26 +450,26 @@ class Command(BaseCommand):
         #TODO Add function to load from sql file, create database, then read from that db
         #load_sql_file()
 
-        self.stdout.write(self.style.SUCCESS('[*] loading {} persons'.format(get_count(cursor, 'persons'))))
+        #self.stdout.write(self.style.SUCCESS('[*] loading {} persons'.format(get_count(cursor, 'persons'))))
         #load_persons(cursor)
 
-        self.stdout.write(self.style.SUCCESS('[*] loading {} tags'.format(get_count(cursor, 'tags'))))
+        #self.stdout.write(self.style.SUCCESS('[*] loading {} tags'.format(get_count(cursor, 'tags'))))
         #load_tags(cursor)
 
-        self.stdout.write(self.style.SUCCESS('[*] loading {} diary entries'.format(get_count(cursor, 'notes'))))
+        #self.stdout.write(self.style.SUCCESS('[*] loading {} diary entries'.format(get_count(cursor, 'notes'))))
         #load_notes(cursor)
 
-        self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
-        load_diaries(cursor)
+        #self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
+        #load_diaries(cursor)
 
-        self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
+        #self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
         #update_entries_with_tags(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] lemmatizing text of {} diary entries'.format(str(Entry.objects.filter(lemmatized='').count()))))
         #lemmatize_texts('mystem')
 
         self.stdout.write(self.style.SUCCESS('[*] geocoding {} places'.format(Place.objects.all().count())))
-        geocode_places()
+        #geocode_places()
 
         self.stdout.write(self.style.SUCCESS('[*] extracting names with Natasha'))
         #names_extractor()
