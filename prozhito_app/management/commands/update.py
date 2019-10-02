@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from prozhito_app.models import *
-#import mysql.connector
+import mysql.connector
 import tqdm
 
 #for NLP
@@ -444,8 +444,8 @@ class Command(BaseCommand):
             'raise_on_warnings': True
         }
 
-        #cnx = mysql.connector.connect(**config)
-        #cursor = cnx.cursor()
+        cnx = mysql.connector.connect(**config)
+        cursor = cnx.cursor()
 
         #TODO Add function to load from sql file, create database, then read from that db
         #load_sql_file()
@@ -482,7 +482,7 @@ class Command(BaseCommand):
         #geocode_entries()
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
-        RuBERT_ents()
+        #RuBERT_ents()
 
 
         #update_wikilinks()

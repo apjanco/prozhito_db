@@ -12,8 +12,32 @@
             <div class="row center-vertically">
                 <div class="col-md-8 offset-sm-0 offset-md-2 text-center" style="margin-top: 100px;margin-bottom: 100px;background-color: #ffffff;">
                     <hr style="border-top:1px;color:rgba(255,255,255,0.9);width:60%;margin:0px;margin-top:-50px;margin-bottom:10px;margin-left:20%;">
-                    <p style="color: rgb(0,0,0);margin-bottom: 0px;height: 39px;"><i class="fa fa-download"></i>&nbsp; &nbsp; Add export options here. CSV, JSON, TXT, voyant URL</p>
+                    <p style="color: rgb(0,0,0);margin-bottom: 0px;height: 39px;"><i class="fa fa-download"></i>&nbsp; &nbsp;Add export options here. CSV, JSON, TXT, voyant URL</p>
                     <p></p>
+                    <table class="table">
+                          <thead>
+                            <tr>
+                               <th scope="col">#</th>
+                              <th scope="col">query</th>
+                              <th scope="col">people</th>
+                              <th scope="col">places</th>
+                              <th scope="col">keywords</th>
+                              <th scope="col">start_year</th>
+                              <th scope="col">end_year</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <th scope="row">1</th>
+                              <td>{{state.query}}</td>
+                              <td>{{state.people}}</td>
+                              <td>{{state.places}}</td>
+                                <td>{{state.keywords}}</td>
+                                <td>{{state.start_year}}</td>
+                                <td>{{state.end_year}}</td>
+                            </tr>
+                          </tbody>
+                        </table>
                 </div>
             </div>
         </div>
