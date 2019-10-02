@@ -24,13 +24,13 @@ admin.site.register(Place, PlaceAdmin)
 class EntryAdmin(admin.ModelAdmin):
     search_fields = ['id', ]
     list_filter = ['sentiment']
-    autocomplete_fields = ['people',]
+    autocomplete_fields = ['people', 'keywords']
 
 
 admin.site.register(Entry, EntryAdmin)
 
 class KeywordAdmin(admin.ModelAdmin):
-    pass
+    search_fields = ['name',]
 
 admin.site.register(Keyword, KeywordAdmin)
 

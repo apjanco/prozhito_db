@@ -24,7 +24,7 @@ urlpatterns = [
     path('table/<type>/', views.table, name='table'),
     path('chart/<entity>/', views.chart, name='chart'),
     path('map/<entity>/', views.map, name='map'),
-    path('export/', views.ExportPageView.as_view(), name='ExportPageView'),
+    path('export/', views.export, name='export'),
     ]
 
 urlpatterns += [

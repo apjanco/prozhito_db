@@ -74,7 +74,19 @@ def map(request, entity):
 
         context = {'state': state }
         if entity == 'diaries':
-            entries = Entry.objects.filter(~Q(places=None) & Q(date_start__gte=start_year) & Q(date_start__lte=end_year))
+            entries = Entry.objects.filter(~Q(places=None))
+            if state['query'] != '':
+                entries = entries.filter(Q(text__icontains=state['query']))
+
+            if state['start_year'] or state['end_year']:
+                start_year = f'{state["start_year"]}-01-01'
+
+                end_year = f'{state["end_year"]}-12-31'
+
+                dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
+                entries = entries.filter(dates)
+
+            #entries = Entry.objects.filter(~Q(places=None) & Q(date_start__gte=start_year) & Q(date_start__lte=end_year))
             # TODO Good place for a pickle
             places = [entry.places.all() for entry in entries]
             all_places = set({})
@@ -107,23 +119,18 @@ def map(request, entity):
 
     else:
         state = get_state(request)
+
         context = {'state': state}
 
         if entity == 'diaries':
             entries = Entry.objects.filter(~Q(places=None))
-            if query:
-                entries =  entries.filter(Q(text__icontains=query))
+            if state['query'] != '':
+                entries = entries.filter(Q(text__icontains=state['query']))
 
-            if start_year or end_year:
-                try:
-                    start_year = '{}-01-01'.format(start_year)
-                except django.core.exceptions.ValidationError:
-                    pass
+            if state['start_year'] or state['end_year']:
+                start_year = f'{state["start_year"]}-01-01'
 
-                try:
-                    end_year = '{}-12-31'.format(end_year)
-                except django.core.exceptions.ValidationError:
-                    pass
+                end_year = f'{state["end_year"]}-12-31'
 
                 dates = Q(date_start__gte=start_year) & Q(date_start__lte=end_year)
                 entries = entries.filter(dates)
@@ -363,15 +370,20 @@ def chart(request, entity):
         return render(request, 'chart.html', context)
 
 
-class ExportPageView(TemplateView):
+def export(request):
+    if request.method == 'POST':
+        # Update state with the current search request
+        update_state(request)
 
-    template_name = "export.html"
+        # Get the current state variable to pass on to the template
+        state = get_state(request)
+        context = {'state': state}
+        return render(request, 'export.html', context)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context['entries'] = Entry.objects.all()[:5]
-        return context
-
+    else:
+        state = get_state(request)
+        context = {'state': state}
+        return render(request, 'export.html', context)
 
 
 class EntryJson(BaseDatatableView):
@@ -462,7 +474,6 @@ class EntryJson(BaseDatatableView):
             print(int(people))
             q = Q(people__id__in=[int(people)]) | Q(author__in=[int(people)])
             qs = qs.filter(q)
-            print('I haz this many peoples', len(qs))
 
         if start_year or end_year:
             try:
@@ -477,8 +488,8 @@ class EntryJson(BaseDatatableView):
                 pass
             print('end_year=', end_year)
 
-            #dates = Q(date_start__gte=start_year)|Q(date_start__isnull=True) & Q(date_start__lte=end_year)|Q(date_start__isnull=True)
-            #qs = qs.filter(dates)
+            dates = Q(date_start__gte=start_year)|Q(date_start__isnull=True) & Q(date_start__lte=end_year)|Q(date_start__isnull=True)
+            qs = qs.filter(dates)
 
         if query:
             q = Q(text__icontains=query) #| Q(date_start__icontains=search) | Q(author__first_name__icontains=search) | Q(sentiment__icontains=search)
@@ -611,8 +622,38 @@ class PlacesJson(BaseDatatableView):
             return format_html("<p>{}</p>".format(row.name,))
         if column == 'wiki':
             return format_html("<p>{}</p>".format(row.wiki,))
+        #if column == 'date':
+        #    return format_html("<p>{}</p>".format(['<a href="">{}-{}-{}</a>'.format(i.date_start.year, i.date_start.month, i.date_start.day) for i in Entry.objects.filter(places=row.id)]))
+
         if column == 'date':
-            return format_html("<p>{}</p>".format([i.date_start for i in Entry.objects.filter(places=row.id)]))
+            html = ''
+            entry = Entry.objects.filter(places=row.id)
+            for i in entry:
+                line = f"""<button type="button" class="btn btn-default" style="color: #ea6645;" data-toggle="modal" data-target="#aaa{i.id}">{i.date_start.year}-{i.date_start.month}-{i.date_start.day}</button>
+                        <!-- Modal -->
+                        <div class="modal fade" id="aaa{i.id}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                          <div class="modal-dialog" role="document">
+                            <div class="modal-content" style="width: 100%">
+                              <div class="modal-header">
+                                <h5 class="modal-title" id="exampleModalLongTitle">{i.date_start.year}-{i.date_start.month}-{i.date_start.day}. {i.author}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                  <span aria-hidden="true">&times;</span>
+                                </button>
+                              </div>
+                              <div class="modal-body">
+                                {formatter(i.text, filter_name='markdown')}
+                              </div>
+                              <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">...закрыть</button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                        """
+                html += line
+
+            return format_html(html)
+
         if column == 'geom':
             try:
                 return format_html("<p>{},{}</p>".format(row.geom.x, row.geom.y))

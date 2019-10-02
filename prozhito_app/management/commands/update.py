@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand, CommandError
 from prozhito_app.models import *
-#import mysql.connector
+import mysql.connector
 import tqdm
 
 #for NLP
@@ -409,15 +409,12 @@ class Command(BaseCommand):
             'raise_on_warnings': True
         }
 
-        #cnx = mysql.connector.connect(**config)
-        #cursor = cnx.cursor()
+        cnx = mysql.connector.connect(**config)
+        cursor = cnx.cursor()
 
         #TODO Add function to load from sql file, create database, then read from that db
         #load_sql_file()
 
-<<<<<<< HEAD
-        
-=======
         self.stdout.write(self.style.SUCCESS('[*] loading {} persons'.format(get_count(cursor, 'persons'))))
         #load_persons(cursor)
 
@@ -428,7 +425,7 @@ class Command(BaseCommand):
         #load_notes(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] loading {} diaries'.format(get_count(cursor, 'diary'))))
-        #load_diaries(cursor)
+        load_diaries(cursor)
 
         self.stdout.write(self.style.SUCCESS('[*] updating {} entry tags'.format(get_count(cursor, 'tags_notes'))))
         #update_entries_with_tags(cursor)
@@ -448,10 +445,9 @@ class Command(BaseCommand):
 
         self.stdout.write(self.style.SUCCESS('[*] geocoding text of all diary entries'))
         #geocode_entries()
->>>>>>> ec7135cee276bd2a50af1c7b1e20c672f96ba359
         #auto_extract_persons_keywords_places()
         #self.stdout.write(self.style.SUCCESS(f'[*] updated entry tags'))
-        RuBERT_ents()
+        #RuBERT_ents()
 
 
         #update_wikilinks()
