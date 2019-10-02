@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="WebServers">
+    <option name="servers">
+      <webServer id="f01f0dfe-5690-4c22-90bb-bc2678976f49" name="prozhito-db remote" url="http://prozhito-db.apjan.co">
+        <fileTransfer host="prozhito-db.apjan.co" port="22" rootFolder="/srv/prozhito_db" accessType="SFTP">
+          <advancedOptions>
+            <advancedOptions dataProtectionLevel="Private" passiveMode="true" shareSSLContext="true" />
+          </advancedOptions>
+          <option name="port" value="22" />
+        </fileTransfer>
+      </webServer>
+    </option>
+  </component>
+</project>
