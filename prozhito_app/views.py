@@ -9,12 +9,12 @@ from django.utils.html import escape, format_html, mark_safe
 from django_markup.markup import formatter
 from django_datatables_view.base_datatable_view import BaseDatatableView
 from django.db.models import Q
+from django.http import JsonResponse
 import pickle
 from prozhito_app import advanced_search
 from django.http import HttpResponse
 from dal import autocomplete
 from django.shortcuts import redirect
-
 
 def make_dict(**args):  # Used to create a dictionary of the current state
     return args
@@ -377,14 +377,31 @@ def export(request):
 
         # Get the current state variable to pass on to the template
         state = get_state(request)
-        context = {'state': state}
+
+        context = {'state': state,}
         return render(request, 'export.html', context)
 
     else:
         state = get_state(request)
-        context = {'state': state}
+        context = {'state': state,}
         return render(request, 'export.html', context)
 
+
+def export_state(request):
+    state = get_state(request)
+    from django.core import serializers
+    if state['start_year'] is None or state['end_year'] is None:
+        entries = serializers.serialize("json",
+                                        Entry.objects.filter(
+                                            Q(date_start__gte=''.join(['1681', '-01', '-01']))
+                                            & Q(date_start__lte=''.join(['2018', '-01', '-01']))))
+
+    else:
+        entries = serializers.serialize("json",
+                                        Entry.objects.filter(Q(date_start__gte=''.join([state['start_year'], '-01', '-01']))
+                                                             & Q(date_start__lte=''.join([state['end_year'], '-01', '-01']))))
+
+    return JsonResponse(entries, safe=False)
 
 class EntryJson(BaseDatatableView):
     # the model you're going to show
@@ -826,3 +843,4 @@ class KeywordAutocomplete(autocomplete.Select2QuerySetView):
 
 
         return qs
+
