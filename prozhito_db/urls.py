@@ -14,7 +14,7 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.contrib import admin
-from django.urls import path
+from django.urls import path, include
 from prozhito_app import views
 
 
@@ -25,7 +25,9 @@ urlpatterns = [
     path('chart/<entity>/', views.chart, name='chart'),
     path('map/<entity>/', views.map, name='map'),
     path('export/', views.export, name='export'),
+    path('export_state/', views.export_state, name='export_state'),
     ]
+
 
 urlpatterns += [
     path('entry-json/', views.EntryJson.as_view(), name='entry_json'),
